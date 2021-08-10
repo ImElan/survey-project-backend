@@ -1,4 +1,4 @@
-package accolite.au.survey;
+package com.accolite.survey;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
