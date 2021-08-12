@@ -1,3 +1,4 @@
+  
 package com.accolite.survey.entity;
 
 import java.util.List;
@@ -17,8 +18,8 @@ public class SurveyQuestion {
 	public String getQuestion() {
 		return Question;
 	}
-	public void setQuestion(String question) {
-		Question = question;
+	public void setQuestion(String Question) {
+		this.Question = Question;
 	}
 	public List<String> getOptions() {
 		return options;
@@ -42,10 +43,10 @@ public class SurveyQuestion {
 		return Objects.equals(Question, other.Question) && Objects.equals(options, other.options)
 				&& questionType == other.questionType;
 	}
-	public SurveyQuestion(QuestionType questionType, String question, List<String> options) {
+	public SurveyQuestion(QuestionType questionType, String Question, List<String> options) {
 		super();
 		this.questionType = questionType;
-		Question = question;
+		this.Question = Question;
 		this.options = options;
 	}
 	@Override

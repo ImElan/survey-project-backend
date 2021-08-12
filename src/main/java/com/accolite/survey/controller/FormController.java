@@ -35,9 +35,14 @@ public class FormController {
 	}
 	
 	// Method to get different Form submit into a database
+//	@GetMapping
+//	public ResponseEntity<List<Form>> getAllForms() {
+//		return ResponseEntity.ok(formService.getAllForms());
+//	}
+	
 	@GetMapping
-	public ResponseEntity<List<Form>> getAllForms() {
-		return ResponseEntity.ok(formService.getAllForms());
+	public List<Form> getAllForms() {
+		return formService.getAllForms();
 	}
 
 }
