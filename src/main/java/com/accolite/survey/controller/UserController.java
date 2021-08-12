@@ -36,9 +36,9 @@ public class UserController {
 	}
 	
 	@GetMapping("/login/{employeeId}/{password}")
-	public void login(@PathVariable String employeeId, @PathVariable String password) {
+	public ResponseEntity login(@PathVariable String employeeId, @PathVariable String password) {
 		userService.findByEmployeeIdAndPassword(employeeId, password);
-		
+		return ResponseEntity.ok().build();
 	}
 	
 	@PutMapping
