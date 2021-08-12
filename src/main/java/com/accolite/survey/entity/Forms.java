@@ -20,10 +20,11 @@ public class Forms {
 	private List<SurveyQuestion> surveyQuestions;
 	
 	public Forms(String formTitle, String formDescription, List<SurveyQuestion> surveyQuestion) {
-		super();
+//		super();
 		this.formTitle = formTitle;
 		this.formDescription = formDescription;
 		this.surveyQuestions = surveyQuestion;
+//		this.surveyQuestions = ((SurveyQuestion) this.surveyQuestions).bind(this);
 	}
 	
 	public String getId() {

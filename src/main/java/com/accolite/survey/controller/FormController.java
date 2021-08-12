@@ -21,11 +21,12 @@ public class FormController {
 	
 	
 	public FormController(FormService formService) {
-		super();
+//		super();
 		this.formService = formService;
 	}
 
 
+	// Method to submit a Form into a database
 	@PostMapping
 	public ResponseEntity addForm(@RequestBody Forms form)
 	{
@@ -33,6 +34,7 @@ public class FormController {
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
+	// Method to get different Form submit into a database
 	@GetMapping
 	public ResponseEntity<List<Forms>> getAllForms() {
 		return ResponseEntity.ok(formService.getAllForms());

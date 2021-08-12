@@ -17,10 +17,12 @@ public class FormService {
 		this.formRepository = formRepository;
 	}
 
+	// Method to submit a Form into a database
 	public void addForm(Forms form) {
 		formRepository.insert(form);
 	}
 	
+	// Method to get different Form submit into a database
 	public List<Forms> getAllForms() {
 		return formRepository.findAll();
 	}
