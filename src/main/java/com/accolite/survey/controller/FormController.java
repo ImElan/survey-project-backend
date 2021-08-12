@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,7 +17,7 @@ public class FormController{
 	@Autowired
 	private FormService formService;
 	@GetMapping("/form/{id}")
-	public Optional<Form> getFormById(String id){
-		
+	public Optional<Form> getFormById(@PathVariable String id){
+		return formService.getFormByID(id);
 	}
 }
