@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.accolite.survey.DAO.FormsRepository;
-import com.accolite.survey.entity.FormEntity;
+//import com.accolite.survey.entity.FormEntity;
 import com.accolite.survey.entity.Forms;
 
 @Service
@@ -19,12 +19,12 @@ public class FormService {
 	}
 
 	// Method to submit a Form into a database
-	public void addForm(FormEntity form) {
+	public void addForm(Forms form) {
 		formRepository.insert(form);
 	}
 	
 	// Method to get different Form submit into a database
-	public List<FormEntity> getAllForms() {
+	public List<Forms> getAllForms() {
 		return formRepository.findAll();
 	}
 	

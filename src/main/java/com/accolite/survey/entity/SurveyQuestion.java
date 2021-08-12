@@ -5,15 +5,15 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-//import lombok.Getter;
-//import lombok.Setter;
-//import lombok.ToString;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Document("")
 public class SurveyQuestion {
 	
 	public SurveyQuestion(QuestionType questionType, String question, List<String> options) {
-//		super();
+		super();
 		this.questionType = questionType;
 		Question = question;
 		this.options = options;
@@ -25,23 +25,5 @@ public class SurveyQuestion {
 	private String Question;
 	@Field(name="Option")
 	private List<String> options;
-	public QuestionType getQuestionType() {
-		return questionType;
-	}
-	public void setQuestionType(QuestionType questionType) {
-		this.questionType = questionType;
-	}
-	public String getQuestion() {
-		return Question;
-	}
-	public void setQuestion(String question) {
-		Question = question;
-	}
-	public List<String> getOptions() {
-		return options;
-	}
-	public void setOptions(List<String> options) {
-		this.options = options;
-	}
 	
 }
