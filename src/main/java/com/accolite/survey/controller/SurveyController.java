@@ -4,7 +4,9 @@ package com.accolite.survey.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,13 +31,20 @@ public class SurveyController {
 		return surveyRepository.findAll();
 	}
 	
-	@PostMapping("/write")
-	public void save(@RequestBody demo_data response) {
+	@PostMapping(value="/write")
+	public demo_data save(@RequestBody demo_data response) {
 		System.out.println("printing....");
 		// to write into database survey
-		surveyRepository.insert(response);
-		//demo_data insertedresponse= surveyRepository.insert(response);
+		
+		demo_data insertedresponse= surveyRepository.insert(response);
+		return insertedresponse;
 	}
 	
+	@DeleteMapping("/delete/{id}")
+	public void deleteById(@PathVariable("id") String id){
+	    surveyRepository.deleteById(id);
+	
+}
+
 	
 }
