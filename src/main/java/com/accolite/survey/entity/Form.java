@@ -2,16 +2,22 @@ package com.accolite.survey.entity;
 import java.util.List;
 import java.util.Objects;
 
-
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "Forms")
 public class Form {
-	
+	@Id
+	private String id;
 	private String formTitle;
 	private String formDescription;
 	private List<SurveyQuestion> surveyQuestions;
-	private int filledby;
+	public String getFormid() {
+		return id;
+	}
+	public void setFormid(String id) {
+		this.id = id;
+	}
 	public String getFormTitle() {
 		return formTitle;
 	}
@@ -30,15 +36,21 @@ public class Form {
 	public void setSurveyQuestions(List<SurveyQuestion> surveyQuestions) {
 		this.surveyQuestions = surveyQuestions;
 	}
-	public int getFilledby() {
-		return filledby;
+	public Form(String id, String formTitle, String formDescription, List<SurveyQuestion> surveyQuestions) {
+		super();
+		this.id = id;
+		this.formTitle = formTitle;
+		this.formDescription = formDescription;
+		this.surveyQuestions = surveyQuestions;
 	}
-	public void setFilledby(int filledby) {
-		this.filledby = filledby;
+	@Override
+	public String toString() {
+		return "Form [id=" + id + ", formTitle=" + formTitle + ", formDescription=" + formDescription
+				+ ", surveyQuestions=" + surveyQuestions + "]";
 	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(filledby, formDescription, formTitle, surveyQuestions);
+		return Objects.hash(formDescription, formTitle, id, surveyQuestions);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -49,23 +61,9 @@ public class Form {
 		if (getClass() != obj.getClass())
 			return false;
 		Form other = (Form) obj;
-		return filledby == other.filledby && Objects.equals(formDescription, other.formDescription)
-				&& Objects.equals(formTitle, other.formTitle) && Objects.equals(surveyQuestions, other.surveyQuestions);
+		return Objects.equals(formDescription, other.formDescription) && Objects.equals(formTitle, other.formTitle)
+				&& Objects.equals(id, other.id) && Objects.equals(surveyQuestions, other.surveyQuestions);
 	}
-	@Override
-	public String toString() {
-		return "Forms [formTitle=" + formTitle + ", formDescription=" + formDescription + ", surveyQuestions="
-				+ surveyQuestions + ", filledby=" + filledby + "]";
-	}
-	public Form(String formTitle, String formDescription, List<SurveyQuestion> surveyQuestions, int filledby) {
-		super();
-		this.formTitle = formTitle;
-		this.formDescription = formDescription;
-		this.surveyQuestions = surveyQuestions;
-		this.filledby = filledby;
-	}
-	
-	
 	
 	
 }
