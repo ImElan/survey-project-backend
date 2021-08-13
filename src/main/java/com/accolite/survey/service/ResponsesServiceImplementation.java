@@ -17,14 +17,6 @@ public class ResponsesServiceImplementation implements ResponsesService {
 	@Autowired
 	ResponsesDAO responsedao;
 
-//	@Override
-//	public Responses getById(String id) {
-//		// TODO Auto-generated method stub
-//		Responses responses = responsedao.findById(id)
-//				.orElseThrow(() -> new RuntimeException(String.format("Cannot Find ResponseObject by Given ID %s")));
-//		return responses;
-//	}
-
 	@Override
 	public Responses addResponse(Responses response) {
 		return responsedao.insert(response);
@@ -39,7 +31,6 @@ public class ResponsesServiceImplementation implements ResponsesService {
 	public Responses getResponseByFormId(String formid) {
 		Responses responses = responsedao.findByFormId(formid).orElseThrow(() -> 
 		new RuntimeException(String.format("Cannot Find ResponseObject by Given ID %s")));
-		
 		return responses;
 	}
 

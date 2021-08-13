@@ -21,23 +21,27 @@ import com.accolite.survey.service.ResponsesService;
 public class ResponsesController {
 	
 	@Autowired
-	ResponsesService responseService;
+	ResponsesService responseService ;
 	
 	@PostMapping
-	public void addResponse(@RequestBody Responses response) {
-		responseService.addResponse(response);
-		System.out.println("loki");
+	public String addResponse(@RequestBody Responses response) {
+		if(response.getUserId()==null || response.getUserId().length()==0) {
+			return "Please provide UserId" ;
+		}
+		responseService.addResponse(response) ;
+		return "Responses Successfully Added" ;
 	}
 	
 	@GetMapping
 	public List<Responses> getAllResponses() {
-		System.out.println("getMapping worrked");
 		return responseService.getAllResponses();
 	}
 	
 	@GetMapping("/{formid}")
     public Responses getResponseByFormId(@PathVariable String formid) {
-		System.out.println("Got formid as params");
-        return responseService.getResponseByFormId(formid);
+		if(formid==null || formid.length()==0) {
+			return null ;
+		}
+        return responseService.getResponseByFormId(formid) ;
     }
 }
