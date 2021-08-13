@@ -35,12 +35,6 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
-	@GetMapping("/login/{employeeId}/{password}")
-	public ResponseEntity login(@PathVariable String employeeId, @PathVariable String password) {
-		userService.findByEmployeeIdAndPassword(employeeId, password);
-		return ResponseEntity.ok().build();
-	}
-	
 	@PutMapping
 	public ResponseEntity updateUser(@RequestBody User user) {
 		userService.updateUser(user);
