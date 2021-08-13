@@ -3,7 +3,7 @@ package com.accolite.survey.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+//import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,21 +28,17 @@ public class FormController {
 
 	// Method to submit a Form into a database
 	@PostMapping
-	public ResponseEntity addForm(@RequestBody Form form)
+	public String addForm(@RequestBody Form form)
 	{
 		formService.addForm(form);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+//		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return "Form is inserted";
 	}
 	
-	// Method to get different Form submit into a database
-//	@GetMapping
-//	public ResponseEntity<List<Form>> getAllForms() {
-//		return ResponseEntity.ok(formService.getAllForms());
-//	}
 	
 	@GetMapping
 	public List<Form> getAllForms() {
 		return formService.getAllForms();
 	}
-
+	
 }
