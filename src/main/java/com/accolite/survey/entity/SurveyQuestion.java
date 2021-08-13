@@ -6,8 +6,9 @@ import java.util.Objects;
 public class SurveyQuestion {
 	
 	private QuestionType questionType;
-	private String Question;
+	private String question;
 	private List<String> options;
+	
 	public QuestionType getQuestionType() {
 		return questionType;
 	}
@@ -15,10 +16,10 @@ public class SurveyQuestion {
 		this.questionType = questionType;
 	}
 	public String getQuestion() {
-		return Question;
+		return question;
 	}
 	public void setQuestion(String question) {
-		Question = question;
+		this.question = question;
 	}
 	public List<String> getOptions() {
 		return options;
@@ -28,7 +29,7 @@ public class SurveyQuestion {
 	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(Question, options, questionType);
+		return Objects.hash(question, options, questionType);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -39,18 +40,18 @@ public class SurveyQuestion {
 		if (getClass() != obj.getClass())
 			return false;
 		SurveyQuestion other = (SurveyQuestion) obj;
-		return Objects.equals(Question, other.Question) && Objects.equals(options, other.options)
+		return Objects.equals(question, other.question) && Objects.equals(options, other.options)
 				&& questionType == other.questionType;
 	}
 	public SurveyQuestion(QuestionType questionType, String question, List<String> options) {
 		super();
 		this.questionType = questionType;
-		Question = question;
+		this.question = question;
 		this.options = options;
 	}
 	@Override
 	public String toString() {
-		return "SurveyQuestion [questionType=" + questionType + ", Question=" + Question + ", options=" + options + "]";
+		return "SurveyQuestion [questionType=" + questionType + ", Question=" + question + ", options=" + options + "]";
 	}
 	
 	
