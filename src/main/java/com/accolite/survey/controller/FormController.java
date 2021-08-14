@@ -29,7 +29,7 @@ public class FormController{
 		return formService.addForm(form);
 	}
 	
-	@GetMapping("/form")
+	@GetMapping("/formByHr")
 	public List<Form> getAllForm(@PathVariable String createdBy ){
 		return formService.getAllForm(createdBy);
 		//return null;
