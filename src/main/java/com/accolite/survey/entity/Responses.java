@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 
 @Entity
 @Document("Responses")
-//@IdClass(ResponsesId.class)
 public class Responses {
 
 	@Id

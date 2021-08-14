@@ -24,8 +24,8 @@ public class ResponsesController {
 	ResponsesService responseService ;
 	
 	@PostMapping
-	public String addResponse(@RequestBody Responses response) {
-		if(response.getUserId()==null || response.getUserId().length()==0) {
+	public String addResponse(@RequestBody Responses response) throws MyException {
+		if(response.getUserId()==null || response.getUserId().isBlank()) {
 			return "Please provide UserId" ;
 		}
 		responseService.addResponse(response) ;
@@ -38,9 +38,9 @@ public class ResponsesController {
 	}
 	
 	@GetMapping("/{formid}")
-    public Responses getResponseByFormId(@PathVariable String formid) {
-		if(formid==null || formid.length()==0) {
-			return null ;
+    public List<Responses> getResponseByFormId(@PathVariable String formid) throws MyException {
+		if(formid==null || formid.isBlank()) {
+			throw new MyException("Please provide a valid formId\n") ;
 		}
         return responseService.getResponseByFormId(formid) ;
     }
