@@ -21,19 +21,17 @@ public class FormController{
 	private FormService formService;
 	@GetMapping("/form/{id}")
 	public Optional<Form> getFormById(@PathVariable String id){
-		System.out.println("Hello");
 		return formService.getFormByID(id);
 	}
 	
 	@PostMapping("/addform")
-	public String addForm(@RequestBody Form form) {
+	public boolean addForm(@RequestBody Form form) {
 		return formService.addForm(form);
 	}
 	
 	@GetMapping("/form")
-	public List<Form> getAllForm(){
-		System.out.println("Hello");
-		return formService.getAllForm();
+	public List<Form> getAllForm(@PathVariable String createdBy ){
+		return formService.getAllForm(createdBy);
 		//return null;
 	}
 	
