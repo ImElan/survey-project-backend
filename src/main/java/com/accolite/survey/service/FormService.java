@@ -10,6 +10,6 @@ import com.accolite.survey.entity.Form;
 @Service
 public interface FormService {	
 	public Optional<Form> getFormByID(String id);
-	public String addForm(Form form);
-	public List<Form> getAllForm();
+	public boolean addForm(Form form);
+	public List<Form> getAllForm(String createdBy);
 }
