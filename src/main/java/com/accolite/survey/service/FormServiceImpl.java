@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.accolite.survey.DAO.FormDAO;
@@ -21,23 +22,22 @@ public class FormServiceImpl implements FormService {
 	}
 
 	@Override
-	public Optional<Form> getFormByID(String id) {
+	public Form getFormByID(String id) {
 		// TODO Auto-generated method stub
-		return formDAO.findById(id);
-		
+		return formDAO.findById(id)
+				.orElseThrow(() -> new RuntimeException(String.format("Can't find any form by id %s",id)));		
 	}
 
 	@Override
-	public String addForm(Form form) {
-		// TODO Auto-generated method stub
+	public  boolean addForm(Form form) {
 		formDAO.save(form);
-		return "Form added successfully";
+		return true;
 	}
 
 	@Override
-	public List<Form> getAllForm() {
-		// TODO Auto-generated method stub
-		return formDAO.findAll();
+	public List<Form> getAllForm(String createdBy) {
+		// TODO Auto-generated method stub		
+		return formDAO.getAllForm(createdBy);
 	}
 
 }
