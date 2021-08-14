@@ -12,6 +12,19 @@ public class Form {
 	private String formTitle;
 	private String formDescription;
 	private List<SurveyQuestion> surveyQuestions;
+	private String createdBy;
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getCreatedBy() {
+		return createdBy;
+	}
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
 	public String getFormid() {
 		return id;
 	}
@@ -36,21 +49,20 @@ public class Form {
 	public void setSurveyQuestions(List<SurveyQuestion> surveyQuestions) {
 		this.surveyQuestions = surveyQuestions;
 	}
-	public Form(String id, String formTitle, String formDescription, List<SurveyQuestion> surveyQuestions) {
+	
+	
+	public Form(String id, String formTitle, String formDescription, List<SurveyQuestion> surveyQuestions,
+			String createdBy) {
 		super();
 		this.id = id;
 		this.formTitle = formTitle;
 		this.formDescription = formDescription;
 		this.surveyQuestions = surveyQuestions;
-	}
-	@Override
-	public String toString() {
-		return "Form [id=" + id + ", formTitle=" + formTitle + ", formDescription=" + formDescription
-				+ ", surveyQuestions=" + surveyQuestions + "]";
+		this.createdBy = createdBy;
 	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(formDescription, formTitle, id, surveyQuestions);
+		return Objects.hash(createdBy, formDescription, formTitle, id, surveyQuestions);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -61,8 +73,9 @@ public class Form {
 		if (getClass() != obj.getClass())
 			return false;
 		Form other = (Form) obj;
-		return Objects.equals(formDescription, other.formDescription) && Objects.equals(formTitle, other.formTitle)
-				&& Objects.equals(id, other.id) && Objects.equals(surveyQuestions, other.surveyQuestions);
+		return Objects.equals(createdBy, other.createdBy) && Objects.equals(formDescription, other.formDescription)
+				&& Objects.equals(formTitle, other.formTitle) && Objects.equals(id, other.id)
+				&& Objects.equals(surveyQuestions, other.surveyQuestions);
 	}
 	
 	
