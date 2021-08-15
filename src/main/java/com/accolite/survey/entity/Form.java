@@ -12,6 +12,7 @@ public class Form {
 	private String formTitle;
 	private String formDescription;
 	private List<SurveyQuestion> surveyQuestions;
+
 	private String createdBy;
 	public String getId() {
 		return id;
@@ -25,6 +26,7 @@ public class Form {
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
+
 	public String getFormid() {
 		return id;
 	}
@@ -49,8 +51,7 @@ public class Form {
 	public void setSurveyQuestions(List<SurveyQuestion> surveyQuestions) {
 		this.surveyQuestions = surveyQuestions;
 	}
-	
-	
+
 	public Form(String id, String formTitle, String formDescription, List<SurveyQuestion> surveyQuestions,
 			String createdBy) {
 		super();
@@ -58,8 +59,7 @@ public class Form {
 		this.formTitle = formTitle;
 		this.formDescription = formDescription;
 		this.surveyQuestions = surveyQuestions;
-		this.createdBy = createdBy;
-	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(createdBy, formDescription, formTitle, id, surveyQuestions);
@@ -78,5 +78,5 @@ public class Form {
 				&& Objects.equals(surveyQuestions, other.surveyQuestions);
 	}
 	
-	
 }
+
