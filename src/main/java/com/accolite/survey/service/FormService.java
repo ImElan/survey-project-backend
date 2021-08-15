@@ -24,33 +24,14 @@ public interface FormService {
 	public Optional<Form> getFormByID(String id);
 	public boolean addForm(Form form);
 	public List<Form> getAllForm(String createdBy);
+	public boolean updateForm(Form form);
 	
 }
 /*
 @Service
 public class FormService {
 	
-	private final FormsRepository formRepository;
-	
-	public FormService(FormsRepository formRepository) {
-//		super();
-		this.formRepository = formRepository;
-	}
-
-	// Method to submit a Form into a database
-	public boolean addForm(Form form) {
-		if(form.getFormTitle()!= null && form.getFormDescription()!=null)
-		{
-			if(form.getSurveyQuestions().size() >=1 && form.getSurveyQuestions().size() <=10)
-			{
-				formRepository.insert(form);
-				return true;
-			}
-		}
-		return false;
-	}*/
-	/*
-	// Method to get different Form submit into a database
+	/ Method to get different Form submit into a database
 	public String getAllForms() throws JsonGenerationException, JsonMappingException, IOException {
 		List<Form> arr = formRepository.findAll();
 		ObjectMapper mapper = new ObjectMapper();
@@ -103,19 +84,3 @@ public class FormService {
 */
 
 
-/*
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
-import com.accolite.survey.entity.Form;
-
-@Service
-public interface FormService {	
-	public Optional<Form> getFormByID(String id);
-	public boolean addForm(Form form);
-	public List<Form> getAllForm(String createdBy);
-	
-}
-*/
