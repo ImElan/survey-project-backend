@@ -14,8 +14,19 @@ import org.springframework.stereotype.Service;
 import com.accolite.survey.DAO.FormsRepository;
 import com.accolite.survey.entity.Form;
 
+import java.util.List;
+import java.util.Optional;
 
+import com.accolite.survey.entity.Form;
 
+@Service
+public interface FormService {	
+	public Optional<Form> getFormByID(String id);
+	public boolean addForm(Form form);
+	public List<Form> getAllForm(String createdBy);
+	
+}
+/*
 @Service
 public class FormService {
 	
@@ -37,8 +48,8 @@ public class FormService {
 			}
 		}
 		return false;
-	}
-	
+	}*/
+	/*
 	// Method to get different Form submit into a database
 	public String getAllForms() throws JsonGenerationException, JsonMappingException, IOException {
 		List<Form> arr = formRepository.findAll();
@@ -89,7 +100,7 @@ public class FormService {
 	
 }
 
-
+*/
 
 
 /*
@@ -105,5 +116,6 @@ public interface FormService {
 	public Optional<Form> getFormByID(String id);
 	public boolean addForm(Form form);
 	public List<Form> getAllForm(String createdBy);
+	
 }
 */
