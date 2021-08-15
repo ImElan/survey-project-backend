@@ -1,11 +1,12 @@
 package com.accolite.survey.controller;
 
 import java.io.IOException;
-import java.util.List;
+//import java.util.List;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.springframework.http.HttpStatus;
+//import org.json.JSONArray;
+//import org.springframework.http.HttpStatus;
 //import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,13 +35,12 @@ public class FormController {
 	public boolean addForm(@RequestBody Form form)
 	{
 		return formService.addForm(form);
-//		return ResponseEntity.status(HttpStatus.CREATED).build();
-//		return "Form is inserted";
+
 	}
 	
-	
+	// Method to get all the forms
 	@GetMapping
-	public List<Form> getAllForms() throws JsonGenerationException, JsonMappingException, IOException {
+	public String getAllForms() throws JsonGenerationException, JsonMappingException, IOException {
 		return formService.getAllForms();
 	}
 	
