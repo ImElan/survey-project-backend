@@ -3,23 +3,34 @@ package com.accolite.survey.entity;
 
 import java.util.List;
 import java.util.Objects;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 public class SurveyQuestion {
 	
 	private QuestionType questionType;
-	private String Question;
+	private String question;
+	
+	@JsonView(Views.optionsOnly.class)
 	private List<String> options;
+	
+	@JsonView(Views.paragraphOnly.class)
+	private String paragraph;
+	
+	@JsonView(Views.starsOnly.class)
+	private List<Integer> stars;
+	
 	public QuestionType getQuestionType() {
 		return questionType;
 	}
 	public void setQuestionType(QuestionType questionType) {
 		this.questionType = questionType;
 	}
+
 	public String getQuestion() {
-		return Question;
+		return question;
 	}
-	public void setQuestion(String Question) {
-		this.Question = Question;
+	public void setQuestion(String question) {
+		this.question = question;
 	}
 	public List<String> getOptions() {
 		return options;
@@ -27,9 +38,23 @@ public class SurveyQuestion {
 	public void setOptions(List<String> options) {
 		this.options = options;
 	}
-	@Override
+	public String getParagraph() {
+		return paragraph;
+	}
+	public void setParagraph(String paragraph) {
+		this.paragraph = paragraph;
+	}
+	public List<Integer> getStars() {
+		return stars;
+	}
+	public void setStars(List<Integer> stars) {
+		this.stars = stars;
+	}
+
+
+		@Override
 	public int hashCode() {
-		return Objects.hash(Question, options, questionType);
+		return Objects.hash(question, options, questionType, paragraph, stars);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -40,18 +65,25 @@ public class SurveyQuestion {
 		if (getClass() != obj.getClass())
 			return false;
 		SurveyQuestion other = (SurveyQuestion) obj;
-		return Objects.equals(Question, other.Question) && Objects.equals(options, other.options)
-				&& questionType == other.questionType;
+		return Objects.equals(question, other.question) && Objects.equals(options, other.options)
+				&& questionType == other.questionType && Objects.equals(paragraph, other.paragraph) 
+				&& Objects.equals(stars, other.stars);
 	}
-	public SurveyQuestion(QuestionType questionType, String Question, List<String> options) {
+
+
+	public SurveyQuestion(QuestionType questionType, String question, List<String> options, String paragraph,
+			List<Integer> stars) {
 		super();
 		this.questionType = questionType;
-		this.Question = Question;
+		this.question = question;
 		this.options = options;
+		this.paragraph = paragraph;
+		this.stars = stars;
 	}
 	@Override
 	public String toString() {
-		return "SurveyQuestion [questionType=" + questionType + ", Question=" + Question + ", options=" + options + "]";
+		return "SurveyQuestion [questionType=" + questionType + ", Question=" + question + ", options=" + options
+				+ ", paragraph=" + paragraph + ", stars=" + stars + "]";
 	}
 	
 	
