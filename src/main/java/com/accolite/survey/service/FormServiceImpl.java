@@ -29,9 +29,16 @@ public class FormServiceImpl implements FormService {
 	}
 
 	@Override
-	public  boolean addForm(Form form) {
-		formDAO.save(form);
-		return true;
+	public boolean addForm(Form form) {
+		if(form.getFormTitle()!= null && form.getFormDescription()!=null)
+		{
+			if(form.getSurveyQuestions().size() >=1 && form.getSurveyQuestions().size() <=10)
+			{
+				formRepository.insert(form);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
