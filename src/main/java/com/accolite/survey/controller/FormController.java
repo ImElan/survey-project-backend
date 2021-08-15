@@ -1,13 +1,10 @@
 package com.accolite.survey.controller;
 
-
-import java.io.IOException;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,21 +24,14 @@ public class FormController{
 		return formService.getFormByID(id);
 	}
 	
-	@GetMapping("/formbyhr/{createdBy}")
-	public List<Form> getAllForm(@PathVariable String createdBy){
-		return formService.getAllForm(createdBy);
-		//return null;
-    
-  // Method to submit a Form into a database
 	@PostMapping("/addform")
-	public boolean addForm(@RequestBody Form form)
-	{
+	public boolean addForm(@RequestBody Form form) {
 		return formService.addForm(form);
 	}
 	
-	@PutMapping("/updateform")
-	public boolean updateForm(@RequestBody Form form){
-		return formService.updateForm(form);
+	@GetMapping("/formByHr/{createdBy}")
+	public List<Form> getAllForm(@PathVariable String createdBy){
+		return formService.getAllForm(createdBy);
 		//return null;
 	}
 	
