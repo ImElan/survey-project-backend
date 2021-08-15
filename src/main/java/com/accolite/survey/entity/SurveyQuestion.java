@@ -73,11 +73,7 @@ public class SurveyQuestion {
 		this.paragraph = paragraph;
 		this.stars = stars;
 	}
-	@Override
-	public String toString() {
-		return "SurveyQuestion [questionType=" + questionType + ", Question=" + question + ", options=" + options
-				+ ", paragraph=" + paragraph + ", stars=" + stars + "]";
-	}
+	
 	
 	
 }
