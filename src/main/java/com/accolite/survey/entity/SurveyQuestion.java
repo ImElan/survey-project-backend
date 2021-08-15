@@ -3,20 +3,13 @@ package com.accolite.survey.entity;
 
 import java.util.List;
 import java.util.Objects;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 public class SurveyQuestion {
 	
 	private QuestionType questionType;
 	private String question;
-	
-	@JsonView(Views.optionsOnly.class)
 	private List<String> options;
-	
-	@JsonView(Views.paragraphOnly.class)
 	private String paragraph;
-	
-	@JsonView(Views.starsOnly.class)
 	private List<Integer> stars;
 	
 	public QuestionType getQuestionType() {

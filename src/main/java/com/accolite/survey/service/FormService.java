@@ -5,21 +5,17 @@ import java.io.IOException;
 import java.util.List;
 
 import org.json.*;
-//import org.apache.tomcat.util.json.JSONParser;
+
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-//import org.codehaus.jackson.map.SerializationConfig;
+
 import org.springframework.stereotype.Service;
 
 import com.accolite.survey.DAO.FormsRepository;
 import com.accolite.survey.entity.Form;
 
-//import com.accolite.survey.entity.QuestionType;
-//import com.accolite.survey.entity.SurveyQuestion;
-//import com.accolite.survey.entity.Views;
-//import com.google.gson.Gson;
-//import com.google.gson.reflect.TypeToken;
+
 
 @Service
 public class FormService {
@@ -51,9 +47,6 @@ public class FormService {
 		
         String jsonInString = mapper.writeValueAsString(arr);
 
-//        String jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arr);
-        
-
         JSONArray formj = new JSONArray(jsonInString);
 
         
@@ -62,7 +55,6 @@ public class FormService {
         	JSONObject obj = formj.getJSONObject(i);
         	JSONArray survq = obj.getJSONArray("surveyQuestions");
 
-        	JSONArray temp = new JSONArray();
         	for(int j=0;j<survq.length();j++)
         	{
             	JSONObject ob = survq.getJSONObject(j);
@@ -91,15 +83,8 @@ public class FormService {
 
         	}
         }
-        System.out.println(formj);
-        
-//        Gson gson = new Gson(); 
-        
-//        Type userListType = new TypeToken<List<Form>>(){}.getType();
-         
-//        List<Form> userArray = gson.fromJson(formj.toString(), userListType); 
-  
-//        formj = formj
+//        System.out.println(formj);
+
         return formj.toString();
 	}
 	
