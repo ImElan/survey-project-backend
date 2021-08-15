@@ -1,4 +1,3 @@
-  
 package com.accolite.survey.entity;
 
 import java.util.List;
@@ -11,7 +10,6 @@ public class SurveyQuestion {
 	private List<String> options;
 	private String paragraph;
 	private List<Integer> stars;
-	
 	public QuestionType getQuestionType() {
 		return questionType;
 	}
@@ -31,6 +29,7 @@ public class SurveyQuestion {
 	public void setOptions(List<String> options) {
 		this.options = options;
 	}
+
 	public String getParagraph() {
 		return paragraph;
 	}
@@ -45,10 +44,11 @@ public class SurveyQuestion {
 	}
 
 
-		@Override
+	@Override
 	public int hashCode() {
 		return Objects.hash(question, options, questionType, paragraph, stars);
-	}
+  }
+  
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -62,10 +62,8 @@ public class SurveyQuestion {
 				&& questionType == other.questionType && Objects.equals(paragraph, other.paragraph) 
 				&& Objects.equals(stars, other.stars);
 	}
-
-
-	public SurveyQuestion(QuestionType questionType, String question, List<String> options, String paragraph,
-			List<Integer> stars) {
+	  public SurveyQuestion(QuestionType questionType, String question, List<String> options, String paragraph,
+		List<Integer> stars) {
 		super();
 		this.questionType = questionType;
 		this.question = question;
@@ -73,7 +71,5 @@ public class SurveyQuestion {
 		this.paragraph = paragraph;
 		this.stars = stars;
 	}
-	
-	
 	
 }

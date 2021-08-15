@@ -1,8 +1,5 @@
 package com.accolite.survey.entity;
 
 public enum QuestionType {
-	SINGLE,
-	MULTIPLE,
-	STAR,
-	DESCRIPTIVE
+	SINGLE , MULTIPLE , STAR , DESCRIPTIVE 
 }
