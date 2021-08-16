@@ -1,13 +1,12 @@
-
 package com.accolite.survey.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,23 +21,27 @@ public class FormController{
 	private FormService formService;
 	@GetMapping("/form/{id}")
 	public Form getFormById(@PathVariable String id){
+		
 		return formService.getFormByID(id);
 	}
 	
 	@PostMapping("/addform")
 	public boolean addForm(@RequestBody Form form) {
+		
 		return formService.addForm(form);
 	}
 	
-	@GetMapping("/formByHr/{createdBy}")
+	@GetMapping("/formbyhr/{createdBy}")
 	public List<Form> getAllForm(@PathVariable String createdBy){
 		return formService.getAllForm(createdBy);
 		//return null;
 	}
 	
-	// Method to get all the forms
-	@GetMapping("/allforms")
-	public List<Form> getAllForms() {
-		return formService.getAllForms();
+	@PutMapping("/updateform")
+	public boolean updateForm(@RequestBody Form form){
+		return formService.updateForm(form);
+		//return null;
 	}
+	
 }
+

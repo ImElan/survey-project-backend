@@ -1,4 +1,3 @@
-  
 package com.accolite.survey.service;
 
 import java.util.List;
@@ -13,5 +12,6 @@ public interface FormService {
 	public Form getFormByID(String id);
 	public boolean addForm(Form form);
 	public List<Form> getAllForm(String createdBy);
-	public List<Form> getAllForms();
+	public boolean updateForm(Form form);
 }
+
