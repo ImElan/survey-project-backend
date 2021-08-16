@@ -27,13 +27,30 @@ public class FormServiceImpl implements FormService {
 		return formDAO.findById(id)
 				.orElseThrow(() -> new RuntimeException(String.format("Can't find any form by id %s",id)));		
 	}
-
+	
 	@Override
-	public  boolean addForm(Form form) {
-		formDAO.save(form);
-		return true;
+	public boolean addForm(Form form) {
+		if(form.getFormTitle()!= null && form.getFormDescription()!=null)
+		{
+			if(form.getSurveyQuestions().size() >=1 && form.getSurveyQuestions().size() <=10)
+			{
+				formRepository.insert(form);
+				return true;
+			}
+		}
+		return false;
 	}
 
+	@Override
+	public boolean updateForm(Form form) {
+		Form savedForm = formDAO.findById(form.getId())
+				.orElseThrow(() -> new RuntimeException(String.format("Can't find any form by id %s",form.getId())));
+		savedForm.setFormDescription(form.getFormDescription());
+		savedForm.setFormTitle(form.getFormTitle());
+		savedForm.setSurveyQuestions(form.getSurveyQuestions());
+		formDAO.save(savedForm);
+		return false;
+	}
 	@Override
 	public List<Form> getAllForm(String createdBy) {
 		// TODO Auto-generated method stub		
