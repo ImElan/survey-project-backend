@@ -12,4 +12,5 @@ public interface FormService {
 	public Form getFormByID(String id);
 	public boolean addForm(Form form);
 	public List<Form> getAllForm(String createdBy);
+	public boolean updateForm(Form form);
 }
