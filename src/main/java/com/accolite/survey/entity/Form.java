@@ -2,6 +2,7 @@ package com.accolite.survey.entity;
 
 import java.util.List;
 import java.util.Objects;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,57 +14,80 @@ public class Form {
 	private String formDescription;
 	private List<SurveyQuestion> surveyQuestions;
 	private String createdBy;
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getCreatedBy() {
-		return createdBy;
-	}
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
-	public String getFormid() {
-		return id;
-	}
-	public void setFormid(String id) {
-		this.id = id;
-	}
-	public String getFormTitle() {
-		return formTitle;
-	}
-	public void setFormTitle(String formTitle) {
-		this.formTitle = formTitle;
-	}
-	public String getFormDescription() {
-		return formDescription;
-	}
-	public void setFormDescription(String formDescription) {
-		this.formDescription = formDescription;
-	}
-	public List<SurveyQuestion> getSurveyQuestions() {
-		return surveyQuestions;
-	}
-	public void setSurveyQuestions(List<SurveyQuestion> surveyQuestions) {
-		this.surveyQuestions = surveyQuestions;
-	}
-	
-	
+	private boolean isRequired;
+
 	public Form(String id, String formTitle, String formDescription, List<SurveyQuestion> surveyQuestions,
-			String createdBy) {
+			String createdBy, boolean isRequired) {
 		super();
 		this.id = id;
 		this.formTitle = formTitle;
 		this.formDescription = formDescription;
 		this.surveyQuestions = surveyQuestions;
 		this.createdBy = createdBy;
+		this.isRequired = isRequired;
 	}
+
+	public boolean isRequired() {
+		return isRequired;
+	}
+
+	public void setRequired(boolean isRequired) {
+		this.isRequired = isRequired;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public String getFormid() {
+		return id;
+	}
+
+	public void setFormid(String id) {
+		this.id = id;
+	}
+
+	public String getFormTitle() {
+		return formTitle;
+	}
+
+	public void setFormTitle(String formTitle) {
+		this.formTitle = formTitle;
+	}
+
+	public String getFormDescription() {
+		return formDescription;
+	}
+
+	public void setFormDescription(String formDescription) {
+		this.formDescription = formDescription;
+	}
+
+	public List<SurveyQuestion> getSurveyQuestions() {
+		return surveyQuestions;
+	}
+
+	public void setSurveyQuestions(List<SurveyQuestion> surveyQuestions) {
+		this.surveyQuestions = surveyQuestions;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(createdBy, formDescription, formTitle, id, surveyQuestions);
+		return Objects.hash(createdBy, formDescription, formTitle, id, isRequired, surveyQuestions);
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -75,7 +99,7 @@ public class Form {
 		Form other = (Form) obj;
 		return Objects.equals(createdBy, other.createdBy) && Objects.equals(formDescription, other.formDescription)
 				&& Objects.equals(formTitle, other.formTitle) && Objects.equals(id, other.id)
-				&& Objects.equals(surveyQuestions, other.surveyQuestions);
+				&& isRequired == other.isRequired && Objects.equals(surveyQuestions, other.surveyQuestions);
 	}
-	
+
 }
