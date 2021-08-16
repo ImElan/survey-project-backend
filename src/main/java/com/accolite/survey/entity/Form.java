@@ -14,26 +14,20 @@ public class Form {
 	private String formDescription;
 	private List<SurveyQuestion> surveyQuestions;
 	private String createdBy;
-	private boolean isRequired;
+	
 
 	public Form(String id, String formTitle, String formDescription, List<SurveyQuestion> surveyQuestions,
-			String createdBy, boolean isRequired) {
+			String createdBy) {
 		super();
 		this.id = id;
 		this.formTitle = formTitle;
 		this.formDescription = formDescription;
 		this.surveyQuestions = surveyQuestions;
 		this.createdBy = createdBy;
-		this.isRequired = isRequired;
+		
 	}
 
-	public boolean isRequired() {
-		return isRequired;
-	}
-
-	public void setRequired(boolean isRequired) {
-		this.isRequired = isRequired;
-	}
+	
 
 	public String getId() {
 		return id;
@@ -85,7 +79,7 @@ public class Form {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(createdBy, formDescription, formTitle, id, isRequired, surveyQuestions);
+		return Objects.hash(createdBy, formDescription, formTitle, id, surveyQuestions);
 	}
 
 	@Override
@@ -99,7 +93,7 @@ public class Form {
 		Form other = (Form) obj;
 		return Objects.equals(createdBy, other.createdBy) && Objects.equals(formDescription, other.formDescription)
 				&& Objects.equals(formTitle, other.formTitle) && Objects.equals(id, other.id)
-				&& isRequired == other.isRequired && Objects.equals(surveyQuestions, other.surveyQuestions);
+				 && Objects.equals(surveyQuestions, other.surveyQuestions);
 	}
 
 }
