@@ -2,8 +2,10 @@ package com.accolite.survey.entity;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.annotation.Id;
 import java.util.ArrayList;
+import javax.persistence.Entity;
 
 
 @Document("Responses")

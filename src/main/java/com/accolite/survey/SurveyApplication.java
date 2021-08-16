@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import com.accolite.survey.service.FormService;
 
-
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
 //@SpringBootApplication
 public class SurveyApplication {

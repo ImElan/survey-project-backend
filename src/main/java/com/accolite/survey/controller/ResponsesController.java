@@ -25,16 +25,20 @@ public class ResponsesController {
 	
 	@PostMapping
 	public String addResponse(@RequestBody Responses response) throws MyException {
-		if(response.getUserId()==null || response.getUserId().isBlank()) {
-			return "Please provide UserId" ;
+		if(responseService.checkResponse(response)) {
+			responseService.addResponse(response) ;
+			return "Responses Successfully Added" ;
 		}
-		responseService.addResponse(response) ;
-		return "Responses Successfully Added" ;
+		return "Please check your response before submitting the form\n" ;
 	}
 	
 	@GetMapping
-	public List<Responses> getAllResponses() {
-		return responseService.getAllResponses();
+	public List<Responses> getAllResponses() throws MyException{
+		List<Responses> list = responseService.getAllResponses();
+		if(list.size()==0) {
+			throw new MyException("No responses yet, fill a form first\n") ;
+		}
+		return list ;
 	}
 	
 	@GetMapping("/{formid}")
@@ -44,4 +48,10 @@ public class ResponsesController {
 		}
         return responseService.getResponseByFormId(formid) ;
     }
+	
+	@GetMapping("/{user_id}/{form_id}")
+	public Responses check(@PathVariable String user_id, @PathVariable String form_id) throws MyException  {
+		return responseService.check(user_id, form_id);
+	}
+
 }
