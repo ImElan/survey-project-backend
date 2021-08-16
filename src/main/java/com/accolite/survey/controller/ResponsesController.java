@@ -36,7 +36,7 @@ public class ResponsesController {
 	public List<Responses> getAllResponses() throws MyException{
 		List<Responses> list = responseService.getAllResponses();
 		if(list.size()==0) {
-			throw new MyException("No responses yet, filla form first\n") ;
+			throw new MyException("No responses yet, fill a form first\n") ;
 		}
 		return list ;
 	}
@@ -53,4 +53,5 @@ public class ResponsesController {
 	public Responses check(@PathVariable String user_id, @PathVariable String form_id) throws MyException  {
 		return responseService.check(user_id, form_id);
 	}
+
 }

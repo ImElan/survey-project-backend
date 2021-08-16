@@ -1,1 +1,1 @@
-# All the controller files should go in this package.
+# All the controller files(java) should go in this package.
