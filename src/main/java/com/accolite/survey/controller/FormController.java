@@ -29,9 +29,14 @@ public class FormController{
 		return formService.addForm(form);
 	}
 	
-	@GetMapping("/formByHr/{createdBy}")
+	@GetMapping("/formbyhr/{createdBy}")
 	public List<Form> getAllForm(@PathVariable String createdBy){
 		return formService.getAllForm(createdBy);
+		//return null;
+	}
+	@PutMapping("/updateform")
+	public boolean updateForm(@RequestBody Form form){
+		return formService.updateForm(form);
 		//return null;
 	}
 	
