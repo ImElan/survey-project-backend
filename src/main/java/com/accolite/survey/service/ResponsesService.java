@@ -14,5 +14,9 @@ public interface ResponsesService {
 	public List<Responses> getAllResponses();
 
 	public List<Responses> getResponseByFormId(String formid);
+
+	public boolean checkResponse(Responses response) throws MyException;
+
+	public Responses check(String user_id, String form_id) throws MyException;
 	
 }
