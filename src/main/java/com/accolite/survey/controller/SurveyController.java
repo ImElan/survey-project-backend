@@ -26,14 +26,15 @@ public class SurveyController {
 
 	@Autowired
 	SurveyRepository surveyRepository;
- 
+
 	
 	@PostMapping("/validation")
 	public boolean Responses (Responses res) {
 		List<Responses> data_response = surveyRepository.findAll();
 		for(Responses other : data_response) {
-			if(other.equals(res)) {
-				return false;
+			if( other.getUserId().equals(res.getUserId())) {
+				if(other.getFormId().equals(res.getFormId()))
+				    return false;
 			}
 		}
 		return true;
