@@ -5,6 +5,10 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 @Document("user")
 public class User {
 	
@@ -12,12 +16,14 @@ public class User {
 	@Field(name = "employeeId")
 	private String employeeId;
 	
+	@JsonProperty(access = Access.WRITE_ONLY)
 	@Field(name = "password")
 	private String password;
 	
 	@Field(name = "name")
 	private String name;
 	
+	@Indexed(unique = true)
 	@Field(name = "email")
 	private String email;
 	
@@ -36,6 +42,7 @@ public class User {
 		this.dateOfJoining = dateOfJoining;
 	}
 
+	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}
@@ -73,5 +80,11 @@ public class User {
 	}
 	public void setDateOfJoining(String dateOfJoining) {
 		this.dateOfJoining = dateOfJoining;
+	}
+
+	@Override
+	public String toString() {
+		return "User [employeeId=" + employeeId + ", password=" + password + ", name=" + name + ", email=" + email
+				+ ", role=" + role + ", dateOfJoining=" + dateOfJoining + "]";
 	}
 }
