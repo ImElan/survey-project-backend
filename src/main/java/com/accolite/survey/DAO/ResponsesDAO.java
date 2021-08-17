@@ -10,6 +10,4 @@ import java.util.Optional;
 public interface ResponsesDAO extends MongoRepository<Responses,String>{
 	@Query("{'formid': ?0}")
     Optional<Responses> findByFormId(String formid);
-
-    public List<Responses> findByFormId(String formid);
 }

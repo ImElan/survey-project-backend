@@ -1,4 +1,4 @@
-package com.accolite.survey.dao;
+package com.accolite.survey.DAO;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
