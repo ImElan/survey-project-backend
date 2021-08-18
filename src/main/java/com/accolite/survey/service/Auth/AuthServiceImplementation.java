@@ -23,5 +23,10 @@ public class AuthServiceImplementation implements AuthService {
 	public String authRouteCheck(String bearerToken) {
 		return authDao.authRouteCheck(bearerToken);
 	}
+
+	@Override
+	public String authRouteWithRolesCheck(String bearerToken) {
+		return authDao.authRouteWithRolesCheck(bearerToken);
+	}
 	
 }

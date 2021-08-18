@@ -94,6 +94,20 @@ public class AuthDAOImplementation implements AuthDAO {
 		return "Authenticated";
 	}
 	
+	@Override
+	public String authRouteWithRolesCheck(String bearerToken) {
+		User user = isAuthenticated(bearerToken);
+		if(user == null) {
+			return "Not authenticated";
+		}
+		
+//		String[] roles = {"HR", "MANAGER", "EMPLOYEE"};
+//		String[] roles = {"HR", "MANAGER", "EMPLOYEE"};
+		String[] roles = {"HR", "MANAGER"};
+		restrictTo(roles, user);
+		return "Authenticated";
+	}
+	
 	
 	/*
 	 * 	Method to check if the currect user who is trying to access the route is logged in - ROUTE PROTECTION
@@ -148,7 +162,7 @@ public class AuthDAOImplementation implements AuthDAO {
 			// you're not allowed to access this route (should be thrown as error)
 			System.out.println("\n\n\nYou are not allowed to access this route.\n\n\n");
 		}
-		
+		System.out.println("\n\n\nYou are allowed to access this route.\n\n\n");
 	}
 	
 	/*

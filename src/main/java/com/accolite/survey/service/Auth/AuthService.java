@@ -6,7 +6,7 @@ import com.accolite.survey.Model.AuthResponse;
 import com.accolite.survey.entity.User;
 
 public interface AuthService {
-	public ResponseEntity<AuthResponse> login(User user);
-
-	public String authRouteCheck(String bearerToken);
+	ResponseEntity<AuthResponse> login(User user);
+	String authRouteCheck(String bearerToken);
+	String authRouteWithRolesCheck(String bearerToken);
 }

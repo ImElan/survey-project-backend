@@ -27,9 +27,14 @@ public class AuthController {
 		return authService.login(user);
 	}
 	
-	@GetMapping("/authenticatedRoute")
-	public String authenticatedRoute(@RequestHeader("Authorization") String bearerToken) {
+	@GetMapping("/authenticatedRouteCheck")
+	public String authenticatedRouteCheck(@RequestHeader("Authorization") String bearerToken) {
 		return authService.authRouteCheck(bearerToken);
+	}
+	
+	@GetMapping("/authenticatedRouteWithRolesCheck")
+	public String authenticatedRouteWithRolesCheck(@RequestHeader("Authorization") String bearerToken) {
+		return authService.authRouteWithRolesCheck(bearerToken);
 	}
 	
 }
