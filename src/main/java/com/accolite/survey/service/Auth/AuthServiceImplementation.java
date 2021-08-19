@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.accolite.survey.DAO.Auth.AuthDAO;
 import com.accolite.survey.Model.AuthResponse;
+import com.accolite.survey.entity.UserRoles;
 
 @Service
 public class AuthServiceImplementation implements AuthService {
@@ -31,6 +32,11 @@ public class AuthServiceImplementation implements AuthService {
 	@Override
 	public ResponseEntity<AuthResponse> loginWithGoogle(String bearerToken) {
 		return authDao.loginWithGoogle(bearerToken);
+	}
+
+	@Override
+	public ResponseEntity<Object> grantAccess(String[] emails, UserRoles role, String bearerToken) {
+		return authDao.grantAccess(emails, role, bearerToken);
 	}
 	
 }

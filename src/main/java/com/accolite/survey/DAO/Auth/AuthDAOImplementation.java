@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,8 +128,6 @@ public class AuthDAOImplementation implements AuthDAO {
 			throw new AuthApiRequestException("Something went wrong: "+e.getMessage());
 		} catch(IllegalArgumentException e) {
 			throw new AuthApiRequestException("Invalid token");
-		} catch (Exception e) {
-			throw new AuthApiRequestException("Something went wrong with the server. Please try again later.");
 		}
 	}
 	
@@ -270,9 +270,68 @@ public class AuthDAOImplementation implements AuthDAO {
 		} catch(JwtException e) {
 			// general jwt error
 			throw new AuthApiRequestException("Something went wrong: "+e.getMessage());
-		} catch(Exception e) {
-			throw new AuthApiRequestException("Something went wrong...Please try again later");
 		}
+	}
+
+	@Override
+	public ResponseEntity<Object> grantAccess(String[] emails, UserRoles role, String bearerToken) {
+		// if emails array is not provided or if an empty array is provided throw an error
+		if(emails == null || emails.length == 0) {
+			throw new AuthApiRequestException("Please provie email ids to give access to");
+		}
+		
+		// if the role to which the users should be changed to is not given throw an error.
+		if(role == null) {
+			throw new AuthApiRequestException("Please provide a role to change the access to");
+		}
+		
+		/*
+		 * 	maintain two different list, one to store all the emails whose role has been changed and other one is to store failed 
+		 * 	ones, meaning those users doesn't exists in our database.
+		 */
+		List<String> successEmails = new ArrayList<>();
+		List<String> failureEmails = new ArrayList<>();
+		
+		// check if the user performing this operation is authenticated
+		User user = isAuthenticated(bearerToken);
+		
+		// check if he/she is an admin (only admin can perform this operation)
+		UserRoles[] roles = {UserRoles.ADMIN};
+		restrictTo(roles, user);
+		
+		// loop over the emails list
+		// 		- if exists change the role and add to success list
+		// 		- if it doesn't exist add to failure list
+		for(String email: emails) {
+			// query to find the email
+			Query query = new Query();
+			query.addCriteria(Criteria.where("email").is(email));
+			
+			// execute the query and see if the user actually exists
+			List<User> users = mongoTemplate.find(query, User.class);
+			boolean userExists = users.size() == 1;
+			
+			// user exists
+			if(userExists) {
+				User curUser = users.get(0);
+				curUser.setRole(role);
+				mongoTemplate.save(curUser);
+				
+				successEmails.add(email);
+			
+			// user doesn't exists.
+			} else {
+				failureEmails.add(email);
+			}
+		}
+		
+		// construct the response
+		HashMap<String, List<String>> response = new HashMap<>();
+		response.put("grantAccessSuccess", successEmails);
+		response.put("grantAccessFailure (Emails Doesn't Exists)", failureEmails);
+		
+		// send the response
+		return new ResponseEntity<Object>(response, HttpStatus.OK);
 	}
 
 	
