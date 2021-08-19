@@ -23,13 +23,12 @@ public class UserService {
 	}
 
 	public void updateUser(User user) {
-		User savedUser = userDAO.findById(user.getEmployeeId()).orElseThrow(
-				() -> new RuntimeException(String.format("Cannot find User by Id %s", user.getEmployeeId())));
+		User savedUser = userDAO.findById(user.getId()).orElseThrow(
+				() -> new RuntimeException(String.format("Cannot find User by Id %s", user.getId())));
 
 		savedUser.setName(user.getName());
-		savedUser.setPassword(user.getPassword());
+//		savedUser.setPassword(user.getPassword());
 		savedUser.setRole(user.getRole());
-		savedUser.setDateOfJoining(user.getDateOfJoining());
 		savedUser.setEmail(user.getEmail());
 
 		userDAO.save(user);
@@ -49,14 +48,14 @@ public class UserService {
 		userDAO.deleteById(id);
 	}
 
-	public User findByEmployeeIdAndPassword(String employeeId, String password) {
-		
-		User user = userDAO.findById(employeeId).orElseThrow(
-				() -> new RuntimeException(String.format("Cannot find User with EmplyeeId %s", employeeId)));
-		System.out.println(user.getPassword()+"  : "+password);
-		if((user.getPassword()).equals(password))
-			return user;
-		else
-			throw new RuntimeException(String.format("Incorrect password"));
-	}
+//	public User findByEmployeeIdAndPassword(String employeeId, String password) {
+//		
+//		User user = userDAO.findById(employeeId).orElseThrow(
+//				() -> new RuntimeException(String.format("Cannot find User with EmplyeeId %s", employeeId)));
+//		System.out.println(user.getPassword()+"  : "+password);
+//		if((user.getPassword()).equals(password))
+//			return user;
+//		else
+//			throw new RuntimeException(String.format("Incorrect password"));
+//	}
 }

@@ -6,24 +6,24 @@ import com.accolite.survey.entity.User;
 
 @Component
 public class AuthResponse {
-	private String tokenId;
+	private Token token;
 	private User user;
 
 	public AuthResponse() {
 		
 	}	
 	
-	public AuthResponse(String tokenId, User user) {
-		this.tokenId = tokenId;
+	public AuthResponse(Token token, User user) {
+		this.token = token;
 		this.user = user;
 	}
 
-	public String getTokenId() {
-		return tokenId;
+	public Token getTokenId() {
+		return token;
 	}
 
-	public void setTokenId(String tokenId) {
-		this.tokenId = tokenId;
+	public void setTokenId(Token token) {
+		this.token = token;
 	}
 
 	public User getUser() {
@@ -36,6 +36,6 @@ public class AuthResponse {
 
 	@Override
 	public String toString() {
-		return "AuthResponse [tokenId=" + tokenId + ", user=" + user + "]";
-	}	
+		return "AuthResponse [token=" + token + ", user=" + user + "]";
+	}
 }
