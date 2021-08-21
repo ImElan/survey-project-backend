@@ -45,7 +45,7 @@ public class ResponsesController {
         return responseService.getResponseByFormId(formid) ;
     }
 	
-	@GetMapping("/{user_id}/{form_id}")
+	@GetMapping("/{form_id}/{user_id}")
 	public ResponseEntity<Responses> check(@PathVariable String user_id, @PathVariable String form_id) throws MyException  {
 		return ResponseEntity.ok(responseService.check(user_id, form_id));
 	}

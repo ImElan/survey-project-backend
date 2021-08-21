@@ -12,6 +12,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.accolite.survey.DAO.ResponsesDAO;
+import com.accolite.survey.Exception.Id.IdNotFoundException;
+import com.accolite.survey.Exception.Id.InvalidIdException;
 import com.accolite.survey.controller.MyException;
 import com.accolite.survey.entity.Responses;
 
@@ -60,29 +62,32 @@ public class ResponsesServiceImplementation implements ResponsesService {
 		Query query = new Query();
 		Criteria criteria = new Criteria();
 		criteria.and("formid").is(form_id);
-		
-		if(user_id != null || !user_id.isBlank()) {
+		System.out.println("user id" +user_id);
+		if(user_id != null && !user_id.isEmpty()) {
+			
 			criteria.and("userid").is(user_id);
-		}else {
-			throw new MyException("User id is not valid");
+			
+		} else {
+			
+			throw new InvalidIdException("User id can not be null or empty");
+			
 		}
 		
 		query.addCriteria(criteria);
 		List<Responses> responses = mongoTemplate.find(query, Responses.class);
 		
 		if(responses == null || responses.isEmpty()) {
-			throw new MyException("Response with particular user id is not found");
+			
+			throw new IdNotFoundException("Response with particular user id is not found");
+			
 		}
+		
 		else {
-		return responses.get(0);
+			
+			return responses.get(0);
+		
 		}
-//		List<Responses> ans = getResponseByFormId(form_id);
-//		for(int i=0 ; i<ans.size() ; i++) {
-//			if(ans.get(i).getUserId().equals(user_id)) {
-//				return ans.get(i) ;
-//			}
-//		}
-//		throw new MyException("No response with this userId, formId found\n") ;
+
 	}
 
 }
