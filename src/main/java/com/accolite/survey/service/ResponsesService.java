@@ -15,4 +15,5 @@ public interface ResponsesService {
 
 	public List<Responses> getResponseByFormId(String formid);
 	
+	public Responses check(String user_id, String form_id) throws MyException;
 }
