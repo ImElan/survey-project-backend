@@ -1,7 +1,6 @@
 package com.accolite.survey.entity;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.annotation.Id;
 import java.util.ArrayList;
 import javax.persistence.Entity;
@@ -23,6 +22,8 @@ public class Responses {
 	private ArrayList<String> questions ;
 	@Field("answers")
 	private ArrayList<String> answers ;
+	@Field("sendcopy")
+	private boolean sendCopy;
 	
 	public String getId() {
 		return id;
@@ -60,5 +61,12 @@ public class Responses {
 	public void setAnswers(ArrayList<String> answers) {
 		this.answers = answers;
 	}
+	public boolean isSendCopy() {
+		return sendCopy;
+	}
+	public void setSendCopy(boolean sendCopy) {
+		this.sendCopy = sendCopy;
+	}
+	
 	
 } 
