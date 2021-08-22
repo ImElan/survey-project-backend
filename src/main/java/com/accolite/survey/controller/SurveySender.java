@@ -83,7 +83,7 @@ public class SurveySender {
 		ArrayList<String> formid = new ArrayList<String>();
 		
 		
-		int days=0;
+		int days=180;
 		List<SurveyFormConfig> s = cs.getAllSurveyFormConfig();
 		for(SurveyFormConfig q:s)
 		{
