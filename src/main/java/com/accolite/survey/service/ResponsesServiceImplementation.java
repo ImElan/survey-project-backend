@@ -111,6 +111,7 @@ public class ResponsesServiceImplementation implements ResponsesService {
 
 	}
 
+	
 	@Override
 	public Sheet createResponseCopy(Responses response) {
 		        
@@ -173,7 +174,6 @@ public class ResponsesServiceImplementation implements ResponsesService {
 					workbook.write(fileOut);
 					fileOut.close();
 					workbook.close();
-					//System.out.println("Creation of spreadsheet successful.."+ sh.getSheetName());
 					
 				}
 				catch(Exception e) {
@@ -182,8 +182,10 @@ public class ResponsesServiceImplementation implements ResponsesService {
 				return sh;
 	}
 
+	
 	@Override
 	public String sendEmailWithAttachment(String toEmail, Sheet attachment) throws MessagingException {
+		
 		String subject = "Accolite Digital India Pvt Ltd - Employee Survey";
 		String body = "Thank you for taking the survey for happiness index. Your copy of response is attached here.";
 		
@@ -200,7 +202,7 @@ public class ResponsesServiceImplementation implements ResponsesService {
         mimeMessageHelper.addAttachment(fileSystem.getFilename(), fileSystem);
         
         mailSender.send(mimeMessage);
-        return "Mail Sent successfully";
+        return "Copy of response sent successfully";
 		
 	}
 

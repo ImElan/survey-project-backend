@@ -23,7 +23,7 @@ public class Responses {
 	@Field("answers")
 	private ArrayList<String> answers ;
 	@Field("sendcopy")
-	private boolean sendCopy;
+	private int sendCopy;
 	
 	public String getId() {
 		return id;
@@ -61,12 +61,11 @@ public class Responses {
 	public void setAnswers(ArrayList<String> answers) {
 		this.answers = answers;
 	}
-	public boolean isSendCopy() {
+	public int getSendCopy() {
 		return sendCopy;
 	}
-	public void setSendCopy(boolean sendCopy) {
+	public void setSendCopy(int sendCopy) {
 		this.sendCopy = sendCopy;
 	}
-	
-	
+		
 } 

@@ -29,11 +29,16 @@ public class ResponsesController {
 	UserService userService ;
 	
 	@PostMapping
-	public String addResponse(@RequestBody Responses response) throws MyException {
+	public String addResponse(@RequestBody Responses response) throws MyException, MessagingException {
 		if(response.getUserId()==null || response.getUserId().isBlank()) {
 			return "Please provide UserId" ;
 		}
-		return "Responses Successfully Added" ;
+		responseService.addResponse(response);
+		if(response.getSendCopy() == 1) {
+			Sheet copy = responseService.createResponseCopy(response);
+		    return responseService.sendEmailWithAttachment(response.getUserId(), copy);
+		}
+		return "Response Successfully Added" ;
 	}
 	
 	@GetMapping
@@ -54,12 +59,14 @@ public class ResponsesController {
 		return ResponseEntity.ok(responseService.check(user_id, form_id));
 	}
 	
-	@GetMapping("/send-copy/{form_id}/{user_id}")
-	public String sendResponseCopy(@PathVariable String user_id, @PathVariable String form_id) throws MyException, MessagingException{
-		
-		Responses response = responseService.check(user_id, form_id);
-		Sheet copy = responseService.createResponseCopy(response);
-		System.out.println("controller: Creation of spreadsheet successful.."+ copy.getSheetName());
-	    return responseService.sendEmailWithAttachment(user_id, copy);
-	}
+//	@GetMapping("/send-copy/{form_id}/{user_id}")
+//	public String sendResponseCopy(@PathVariable String user_id, @PathVariable String form_id) throws MyException, MessagingException{
+//
+//		Responses response = responseService.check(user_id, form_id);
+//		if(response.getSendCopy() == 0) {
+//			return "User doesn't want copy of response";
+//		}
+//		Sheet copy = responseService.createResponseCopy(response);
+//	    return responseService.sendEmailWithAttachment(user_id, copy);
+//	}
 }
