@@ -64,9 +64,6 @@ public class SurveySender {
 	@Autowired
 	ConfigFormService cs;
 
-
-	public static final String SAMPLE_XLSX_FILE_PATH = "/Users/gokkul/Desktop/Accolite Employee.xlsx";
-
 	@GetMapping("/accolite_survey_mail/{id}")
 	public String sendHTMLEmailWithAttachment(@PathVariable String id, Model model)
 			throws Exception {
