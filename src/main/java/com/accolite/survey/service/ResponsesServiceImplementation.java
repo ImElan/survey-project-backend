@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.transaction.Transactional;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -15,11 +19,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -44,20 +43,28 @@ public class ResponsesServiceImplementation implements ResponsesService {
 	ResponsesDAO responsedao;
 	
 	@Autowired
+	ResponsesService responseService;
+	
+	@Autowired
 	private MongoTemplate mongoTemplate;
 	
 	@Autowired
     private JavaMailSender mailSender;
 
 	@Override
-	public Responses addResponse(Responses response) throws MyException {
+	public Responses addResponse(Responses response) throws MyException, MessagingException {
 		List<Responses> ans = getResponseByFormId(response.getFormId());
 		for(int i=0 ; i<ans.size() ; i++) {
 			if(ans.get(i).getUserId().equals(response.getUserId())) {
 				throw new MyException("This user can't fill this form as it's been already filled by this userId\n") ;
 			}
 		}
-		return responsedao.insert(response);
+		Responses newResponse = responsedao.insert(response);
+		if(response.getSendCopy() == 1) {
+			Sheet copy = responseService.createResponseCopy(response);
+		    responseService.sendEmailWithAttachment(response.getUserId(), copy);
+		}
+		return newResponse;
 	}
 
 	@Override

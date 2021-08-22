@@ -34,10 +34,6 @@ public class ResponsesController {
 			return "Please provide UserId" ;
 		}
 		responseService.addResponse(response);
-		if(response.getSendCopy() == 1) {
-			Sheet copy = responseService.createResponseCopy(response);
-		    return responseService.sendEmailWithAttachment(response.getUserId(), copy);
-		}
 		return "Response Successfully Added" ;
 	}
 	
