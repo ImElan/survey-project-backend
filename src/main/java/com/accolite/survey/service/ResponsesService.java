@@ -11,7 +11,7 @@ import com.accolite.survey.entity.Responses;
 
 public interface ResponsesService {
 
-	public Responses addResponse(Responses response) throws MyException;
+	public String addResponse(Responses response) throws MyException, MessagingException;
 
 	public List<Responses> getAllResponses();
 

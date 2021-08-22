@@ -44,20 +44,28 @@ public class ResponsesServiceImplementation implements ResponsesService {
 	ResponsesDAO responsedao;
 	
 	@Autowired
+	ResponsesService responseService;
+	
+	@Autowired
 	private MongoTemplate mongoTemplate;
 	
 	@Autowired
     private JavaMailSender mailSender;
 
 	@Override
-	public Responses addResponse(Responses response) throws MyException {
+	public String addResponse(Responses response) throws MyException, MessagingException {
 		List<Responses> ans = getResponseByFormId(response.getFormId());
 		for(int i=0 ; i<ans.size() ; i++) {
 			if(ans.get(i).getUserId().equals(response.getUserId())) {
 				throw new MyException("This user can't fill this form as it's been already filled by this userId\n") ;
 			}
 		}
-		return responsedao.insert(response);
+		responsedao.insert(response);
+		if(response.getSendCopy() == 1) {
+			Sheet copy = responseService.createResponseCopy(response);
+		    return responseService.sendEmailWithAttachment(response.getUserId(), copy);
+		}
+		return "Response recorded successfully";
 	}
 
 	@Override

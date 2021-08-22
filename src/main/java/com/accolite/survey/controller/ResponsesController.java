@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,15 +29,11 @@ public class ResponsesController {
 	
 	@PostMapping
 	public String addResponse(@RequestBody Responses response) throws MyException, MessagingException {
+		
 		if(response.getUserId()==null || response.getUserId().isBlank()) {
 			return "Please provide UserId" ;
 		}
-		responseService.addResponse(response);
-		if(response.getSendCopy() == 1) {
-			Sheet copy = responseService.createResponseCopy(response);
-		    return responseService.sendEmailWithAttachment(response.getUserId(), copy);
-		}
-		return "Response Successfully Added" ;
+		return responseService.addResponse(response);
 	}
 	
 	@GetMapping
