@@ -9,4 +9,6 @@ import com.accolite.survey.entity.User;
 @Repository
 public interface UserDAO extends MongoRepository<User, String>{
 
+	@Query("{email:?0}")
+	User getByEmail(String e);
 }

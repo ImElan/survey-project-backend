@@ -1,6 +1,7 @@
 package com.accolite.survey.controller;
 
 
+import java.io.File;
 import java.io.FileInputStream;
 
 import java.text.SimpleDateFormat;
@@ -65,12 +66,12 @@ public class SurveySender {
 	ConfigFormService cs;
 
 
-	public static final String SAMPLE_XLSX_FILE_PATH = "/Users/gokkul/Desktop/Accolite Employee.xlsx";
-
 	@GetMapping("/accolite_survey_mail/{id}")
 	public String sendHTMLEmailWithAttachment(@PathVariable String id, Model model)
 			throws Exception {
-		FileInputStream fis = new FileInputStream(SAMPLE_XLSX_FILE_PATH);
+		String Path = new File("").getAbsolutePath();
+		FileInputStream fis = new FileInputStream(Path+"//Accolite Employee.xlsx"); 
+
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);
 		XSSFSheet sheet = workbook.getSheet("Employee");
 		XSSFRow row = sheet.getRow(0);
