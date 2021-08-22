@@ -70,7 +70,8 @@ public class SurveySender {
 	@GetMapping("/accolite_survey_mail/{id}")
 	public String sendHTMLEmailWithAttachment(@PathVariable String id, Model model)
 			throws Exception {
-		FileInputStream fis = new FileInputStream(SAMPLE_XLSX_FILE_PATH);
+		String Path = new File("").getAbsolutePath();
+		FileInputStream fis = new FileInputStream(Path+"//Accolite Employee.xlsx"); 
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);
 		XSSFSheet sheet = workbook.getSheet("Employee");
 		XSSFRow row = sheet.getRow(0);
