@@ -11,9 +11,10 @@ public class SurveyQuestion {
 	private String noOfStars;
 	private boolean isHalfStarAllowed;
 	private boolean isRequired;
+	private String imageData;
 
 	public SurveyQuestion(QuestionType questionType, String question, List<String> options, String noOfStars,
-			boolean isHalfStarAllowed, boolean isRequired) {
+			boolean isHalfStarAllowed, boolean isRequired, String imageData) {
 		super();
 		this.questionType = questionType;
 		this.question = question;
@@ -21,6 +22,15 @@ public class SurveyQuestion {
 		this.noOfStars = noOfStars;
 		this.isHalfStarAllowed = isHalfStarAllowed;
 		this.isRequired = isRequired;
+		this.imageData = imageData;
+	}
+	
+	public void setImageData(String imageData) {
+	  	this.imageData = imageData;
+	}
+	
+	public String getImageData() {
+		return imageData;
 	}
 
 	public boolean isRequired() {
@@ -73,7 +83,7 @@ public class SurveyQuestion {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(isHalfStarAllowed, isRequired, noOfStars, options, question, questionType);
+		return Objects.hash(isHalfStarAllowed, isRequired, noOfStars, options, question, questionType, imageData);
 	}
 
 	@Override
@@ -87,7 +97,8 @@ public class SurveyQuestion {
 		SurveyQuestion other = (SurveyQuestion) obj;
 		return isHalfStarAllowed == other.isHalfStarAllowed && isRequired == other.isRequired
 				&& Objects.equals(noOfStars, other.noOfStars) && Objects.equals(options, other.options)
-				&& Objects.equals(question, other.question) && questionType == other.questionType;
+				&& Objects.equals(question, other.question) && questionType == other.questionType
+				&& Objects.equals(imageData,other.imageData);
 	}
 
 	
