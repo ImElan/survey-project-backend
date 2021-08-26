@@ -11,9 +11,10 @@ public class SurveyQuestion {
 	private String noOfStars;
 	private boolean isHalfStarAllowed;
 	private boolean isRequired;
+	private String imageData;
 
 	public SurveyQuestion(QuestionType questionType, String question, List<String> options, String noOfStars,
-			boolean isHalfStarAllowed, boolean isRequired) {
+			boolean isHalfStarAllowed, boolean isRequired, String imageData) {
 		super();
 		this.questionType = questionType;
 		this.question = question;
@@ -21,6 +22,15 @@ public class SurveyQuestion {
 		this.noOfStars = noOfStars;
 		this.isHalfStarAllowed = isHalfStarAllowed;
 		this.isRequired = isRequired;
+		this.imageData = imageData;
+	}
+	
+	public String setImageData(String imageData) {
+	        this.imageData = imageData;
+	}
+	
+	public String getImageData() {
+		return imageData;
 	}
 
 	public boolean isRequired() {
