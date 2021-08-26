@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.accolite.survey.Model.AuthResponse;
 import com.accolite.survey.Model.GrantAccessBody;
+import com.accolite.survey.entity.User;
 import com.accolite.survey.service.Auth.AuthService;
 
 @RestController
@@ -53,6 +54,11 @@ public class AuthController {
 	}
 	
 	@PostMapping("/grantAccess")
+	public ResponseEntity<Object> grantAccess(@RequestBody User user,@RequestHeader("Authorization") String bearerToken) {
+		return authService.grantAccess(user, bearerToken);
+	}
+	
+	@PostMapping("/admin/grantAccess")
 	public ResponseEntity<Object> grantAccess(@RequestBody GrantAccessBody body, @RequestHeader("Authorization") String bearerToken) {	
 		return authService.grantAccess(body.getEmails(), body.getRole(), bearerToken);
 	}

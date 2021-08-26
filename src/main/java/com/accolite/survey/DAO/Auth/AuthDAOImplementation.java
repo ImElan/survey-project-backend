@@ -184,8 +184,8 @@ public class AuthDAOImplementation implements AuthDAO {
 		Instant now = Instant.now();		
 		Date curTime = Date.from(now);
 		
-		// 2. check if the previously issued access token is still valid.
-		if(user.getAccessTokenExpirationDate().after(curTime)) {
+		// 2. check if a token exists and if it exists, see if it is still valid.
+		if(user.getAccessToken() == null || user.getAccessTokenExpirationDate().after(curTime)) {
 			/*
 			 * 	It is still valid, so our application is not requesting for new access token using refresh token.
 			 * 	Refresh token is compromised. (Don't send new Access token in this case).
@@ -425,6 +425,52 @@ public class AuthDAOImplementation implements AuthDAO {
 		}
 	}
 
+	/*
+	 * 	Method to change the role of a single user (USED IN ADMIN PANEL IN FRONTEND)
+	 */
+	@Override
+	public ResponseEntity<Object> grantAccess(User user, String bearerToken) {
+		if(user == null) {
+			throw new AuthApiRequestException("Please select a user to change the role.");
+		}
+		
+		if(user.getRole() == null) {
+			throw new AuthApiRequestException("Please select a role to change the user's role to.");
+		}
+		
+		// see if the user performing this action is logged in.
+		User userPerformingThisOperation = isAuthenticated(bearerToken, TokenType.ACCESS);
+		
+		// see if the user performing this action is an Admin or HR.
+		UserRoles[] allowedRolesToAccessThisRoute = {UserRoles.ADMIN, UserRoles.HR};
+		restrictTo(allowedRolesToAccessThisRoute, userPerformingThisOperation);
+		
+		// get the user whose role have to be changed.
+		Query query = new Query();
+		query.addCriteria(Criteria.where("id").is(user.getId()));
+		List<User> users = mongoTemplate.find(query, User.class);
+		
+		// check if user exists for the given user id.
+		if(users == null || users.size() == 0) {
+			throw new AuthApiRequestException("No user exists with the given id");
+		}
+		
+		User curUser = users.get(0);
+		
+		// update the role and save the user.
+		curUser.setRole(user.getRole());
+		userDao.save(curUser);
+		
+		// construct and send the response.
+		HashMap<String,String> response = new HashMap<>();
+		response.put("message", curUser.getName()+" is given "+curUser.getRole()+" access.");
+		return new ResponseEntity<Object>(response, HttpStatus.OK);
+	}
+	
+	
+	/*
+	 * 	Method to change the role of list of users
+	 */
 	@Override
 	public ResponseEntity<Object> grantAccess(String[] emails, UserRoles role, String bearerToken) {
 		// if emails array is not provided or if an empty array is provided throw an error
