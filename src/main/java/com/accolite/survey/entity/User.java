@@ -1,9 +1,13 @@
 package com.accolite.survey.entity;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Document("user")
 public class User {
@@ -22,6 +26,12 @@ public class User {
 	
 	@Field(name = "googleId")
 	private String googleId;
+	
+	@Field(name = "accessToken")
+	private String accessToken;
+	
+	@Field(name = "accessTokenExpirationDate")
+	private Date accessTokenExpirationDate;
 	
 	public User() {
 		
@@ -67,9 +77,27 @@ public class User {
 		this.googleId = googleId;
 	}
 
+	@JsonIgnore
+	public String getAccessToken() {
+		return accessToken;
+	}
+
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
+	}
+
+	@JsonIgnore
+	public Date getAccessTokenExpirationDate() {
+		return accessTokenExpirationDate;
+	}
+
+	public void setAccessTokenExpirationDate(Date accessTokenExpirationDate) {
+		this.accessTokenExpirationDate = accessTokenExpirationDate;
+	}
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", email=" + email + ", role=" + role + ", googleId=" + googleId
-				+ "]";
+				+ ", accessToken=" + accessToken + ", accessTokenExpirationDate=" + accessTokenExpirationDate + "]";
 	}
 }

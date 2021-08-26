@@ -24,6 +24,7 @@ import com.accolite.survey.DAO.UserDAO;
 import com.accolite.survey.Exception.AuthException.AuthApiRequestException;
 import com.accolite.survey.Model.AuthResponse;
 import com.accolite.survey.Model.Token;
+import com.accolite.survey.Model.TokenType;
 import com.accolite.survey.entity.User;
 import com.accolite.survey.entity.UserRoles;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -51,15 +52,18 @@ public class AuthDAOImplementation implements AuthDAO {
 	@Value("${JWT_SECRET_KEY}")
 	private String SECRET_KEY;
 	
+	@Value("${JWT_REFRESH_SECRET_KEY}")
+	private String REFRESH_SECRET_KEY;
+	
 	@Value("${GOOGLE_CLIENT_ID}")
 	private String CLIENT_ID;
 	
 	@Autowired
 	private UserDAO userDao;
 	
-	public ResponseEntity<AuthResponse> loginWithGoogle(String bearerToken) {
+	public ResponseEntity<AuthResponse> loginWithGoogle(String googleIdToken) {
 		// 1. Get the token from authorization header
-		String[] authHeader = bearerToken.split(" ");
+		String[] authHeader = googleIdToken.split(" ");
 		
 		if(authHeader.length < 2) {
 			throw new AuthApiRequestException("Invalid Authorization Header.. Should be in the format Bearer {Token}");
@@ -67,7 +71,7 @@ public class AuthDAOImplementation implements AuthDAO {
 		
 		String token = authHeader[1];
 				
-		// 2. Verify the access token
+		// 2. Verify the id token from google
 		HttpTransport transport = new NetHttpTransport();
         JacksonFactory jsonFactory = new JacksonFactory();
 		GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
@@ -92,7 +96,8 @@ public class AuthDAOImplementation implements AuthDAO {
 				query.addCriteria(Criteria.where("googleId").is(userId));
 				List<User> users = mongoTemplate.find(query, User.class);
 				
-				Token jwtToken;
+				Token accessToken;
+				Token refreshToken;
 				// this user doesn't exists (using our application for the first time)
 				if(users.size() == 0) {
 					// 4.a) create a user in our database.
@@ -104,20 +109,57 @@ public class AuthDAOImplementation implements AuthDAO {
 					
 					userDao.insert(user);
 					
-					// 4.b) return the newly user along with jwt token
-					jwtToken = generateJwtToken(user.getId());
-					AuthResponse response = new  AuthResponse(jwtToken, user);
+					// 4.b) return the newly user along with access token and refresh token
+					accessToken = generateJwtToken(user.getId());
+					refreshToken = generateRefreshToken(user.getId());
+					
+					// setting the access token and access token expiration date.
+					user.setAccessToken(accessToken.getTokenId());
+					user.setAccessTokenExpirationDate(accessToken.getExpiration());
+					
+					userDao.save(user);
+					
+					AuthResponse response = new  AuthResponse(accessToken,refreshToken, user);
 					return new ResponseEntity<AuthResponse>(response, HttpStatus.OK);
 				}
 				
 				// 5. user already exists, return the user
 				User existingUser = users.get(0);
 				
-				// Generate jwt token.
-				jwtToken = generateJwtToken(existingUser.getId());
+				/*
+				 * 	There's two possibilities here.
+				 * 		1. User logged out and trying to login again.
+				 * 			- In this case accessToken and accessTokenExpiration would have been set to null, so we have to create
+				 * 			  a new token.
+				 * 		2. User not logged out and trying to login from different machine.
+				 * 			- In this case we can send the already existing accessToken to the user.
+				 * 
+				 * 	In both the case we will need a new refresh token. Because in case 1 refresh token would've been cleared from frontend
+				 * 	local storage and in case he/she is using a different machine so we need to send a refresh token.
+				 * 
+				 */
+				
+				// case 1: User logged out and logging in again.
+				if(existingUser.getAccessToken() == null) {
+					// Generate jwt token.
+					accessToken = generateJwtToken(existingUser.getId());
+					
+					// set the token and token expiration in database.
+					existingUser.setAccessToken(accessToken.getTokenId());
+					existingUser.setAccessTokenExpirationDate(accessToken.getExpiration());
+					
+					userDao.save(existingUser);
+					
+				// case 2: User not logged out and trying to login again from different machine.
+				} else {
+					accessToken = new Token(existingUser.getAccessToken(), existingUser.getAccessTokenExpirationDate());
+				}
+				
+				// Generate refresh token
+				refreshToken = generateRefreshToken(existingUser.getId());
 				
 				// construct and send the response
-				AuthResponse response = new  AuthResponse(jwtToken, existingUser);
+				AuthResponse response = new  AuthResponse(accessToken,refreshToken, existingUser);
 				return new ResponseEntity<AuthResponse>(response, HttpStatus.OK);
 			} else {
 				throw new AuthApiRequestException("Not a valid token, Try logging in again");
@@ -131,15 +173,62 @@ public class AuthDAOImplementation implements AuthDAO {
 		}
 	}
 	
+	/*
+	 * 	Method to get new Access Token using refresh token.
+	 */
+	@Override
+	public ResponseEntity<AuthResponse> getAccessTokenUsingRefreshToken(String refreshToken) {
+		User user = isAuthenticated(refreshToken, TokenType.REFRESH);
+		
+		// 1. Get current time
+		Instant now = Instant.now();		
+		Date curTime = Date.from(now);
+		
+		// 2. check if the previously issued access token is still valid.
+		if(user.getAccessTokenExpirationDate().after(curTime)) {
+			/*
+			 * 	It is still valid, so our application is not requesting for new access token using refresh token.
+			 * 	Refresh token is compromised. (Don't send new Access token in this case).
+			 */
+			throw new AuthApiRequestException("Unauthorized Access");
+		}
+		
+		// 3. if the token is not valid generate a new access token and update the database.
+		Token accessToken = generateJwtToken(user.getId());
+		user.setAccessToken(accessToken.getTokenId());
+		user.setAccessTokenExpirationDate(accessToken.getExpiration());
+		userDao.save(user);
+		
+		// return the new access token
+		AuthResponse response = new  AuthResponse(accessToken,null, user);
+		return new ResponseEntity<AuthResponse>(response, HttpStatus.OK);
+	}
+	
+	@Override
+	public ResponseEntity<Object> logout(String bearerToken) {
+		User user = isAuthenticated(bearerToken, TokenType.ACCESS);
+		user.setAccessToken(null);
+		user.setAccessTokenExpirationDate(null);
+		
+		userDao.save(user);
+		
+		// construct the response
+		HashMap<String, String> response = new HashMap<>();
+		response.put("message", "User logged out");
+		
+		// send the response
+		return new ResponseEntity<Object>(response, HttpStatus.OK);
+	}
+	
 	@Override
 	public String authRouteCheck(String bearerToken) {
-		isAuthenticated(bearerToken);
+		isAuthenticated(bearerToken, TokenType.ACCESS);
 		return "Authenticated";
 	}
 	
 	@Override
 	public String authRouteWithRolesCheck(String bearerToken) {
-		User user = isAuthenticated(bearerToken);
+		User user = isAuthenticated(bearerToken, TokenType.ACCESS);
 		
 		UserRoles[] roles = {UserRoles.HR, UserRoles.PN, UserRoles.EMPLOYEE};
 //		UserRoles[] roles = {UserRoles.HR};
@@ -192,7 +281,8 @@ public class AuthDAOImplementation implements AuthDAO {
 		
 		// 2. Generate expiration time (1 hour for now)
 		Instant now = Instant.now();
-		Date expirationTime = Date.from(now.plus(1, ChronoUnit.HOURS));
+		
+		Date expirationTime = Date.from(now.plus(1, ChronoUnit.MINUTES));
 		
 		// 3. Build and return the token
 		String token = Jwts.builder()
@@ -207,11 +297,37 @@ public class AuthDAOImplementation implements AuthDAO {
 		return new Token(token,expirationTime);
 	}
 	
+	/*
+	 * 	Method to generate Refresh Token.
+	 * 
+	 */
+	public Token generateRefreshToken(String userId) {
+		// 1. secret key to encode the token.
+		byte[] JWT_REFRESH_SECRET_KEY = Base64.getDecoder().decode(REFRESH_SECRET_KEY);
+		
+		// 2. Generate expiration time (1 hour for now)
+		Instant now = Instant.now();
+		
+		Date expirationTime = Date.from(now.plus(7, ChronoUnit.DAYS));
+		
+		// 3. Build and return the token
+		String token = Jwts.builder()
+				.setSubject("refreshToken")
+				.setAudience("surveyUsersRefreshToken")
+				.claim("userId", userId)
+				.setIssuedAt(Date.from(now))
+				.setExpiration(expirationTime)
+				.signWith(Keys.hmacShaKeyFor(JWT_REFRESH_SECRET_KEY))
+				.compact();
+		
+		return new Token(token,expirationTime);
+	}
+	
 	
 	/*
 	 * 	Method to check if the currect user who is trying to access the route is logged in - ROUTE PROTECTION
 	 */
-	public User isAuthenticated(String bearerToken) {
+	public User isAuthenticated(String bearerToken, TokenType tokenType) {
 		// 1. Get the token from authorization header
 		String[] authHeader = bearerToken.split(" ");
 		
@@ -223,14 +339,22 @@ public class AuthDAOImplementation implements AuthDAO {
 		String token = authHeader[1];
 		
 		// 2. decode the token to see if its a valid token
-		Jws<Claims> decodedPayload = getPayloadFromToken(token);
+		Jws<Claims> decodedPayload;
+		
+		// based on the token type select appropriate method to get payload.
+		if(tokenType == TokenType.ACCESS) {
+			decodedPayload = getPayloadFromToken(token);
+		} else {
+			decodedPayload = getPayloadFromRefreshToken(token);
+		}
+		
 		if(decodedPayload == null) {
 			// not a valid token
 			throw new AuthApiRequestException("Invalid token.");
 		}
 		
-		// 3. get the empId from payload
-		String userId = decodedPayload.getBody().get("userId", String.class);
+		// 3. get the userId from payload
+		String userId = decodedPayload.getBody().get("userId", String.class);		
 		
 		// 4. find the user using id.
 		Query query = new Query();
@@ -246,6 +370,7 @@ public class AuthDAOImplementation implements AuthDAO {
 		return users.get(0);
 	}
 	
+	
 	/*
 	 * 	Helper method to get payload from a token.
 	 */
@@ -255,7 +380,7 @@ public class AuthDAOImplementation implements AuthDAO {
 		try {
 			Jws<Claims> result = Jwts.parserBuilder()
 					.requireAudience("surveyUsers")
-					.setAllowedClockSkewSeconds(300)
+					.setAllowedClockSkewSeconds(60)
 					.setSigningKey(Keys.hmacShaKeyFor(JWT_SECRET_KEY))
 					.build()
 					.parseClaimsJws(token);
@@ -264,7 +389,34 @@ public class AuthDAOImplementation implements AuthDAO {
 		} catch(IncorrectClaimException e) {
 			throw new AuthApiRequestException("Unauthorized access. You're not allowed to access this route.");
 		} catch(ExpiredJwtException e) {
-			throw new AuthApiRequestException("Token expired please login again");
+			throw new AuthApiRequestException("ACCESS_TOKEN_EXPIRED");
+		} catch(SignatureException e) {
+			throw new AuthApiRequestException("Invalid token");
+		} catch(JwtException e) {
+			// general jwt error
+			throw new AuthApiRequestException("Something went wrong: "+e.getMessage());
+		}
+	}
+	
+	/*
+	 * 	Helper method to get payload from a refresh token.
+	 */
+	public Jws<Claims> getPayloadFromRefreshToken(String token) {
+		byte[] JWT_REFRESH_SECRET_KEY = Base64.getDecoder().decode(REFRESH_SECRET_KEY);
+		
+		try {
+			Jws<Claims> result = Jwts.parserBuilder()
+					.requireAudience("surveyUsersRefreshToken")
+					.setAllowedClockSkewSeconds(60)
+					.setSigningKey(Keys.hmacShaKeyFor(JWT_REFRESH_SECRET_KEY))
+					.build()
+					.parseClaimsJws(token);
+			return result;
+			
+		} catch(IncorrectClaimException e) {
+			throw new AuthApiRequestException("Unauthorized access. You're not allowed to access this route.");
+		} catch(ExpiredJwtException e) {
+			throw new AuthApiRequestException("Refresh Token expired please login again");
 		} catch(SignatureException e) {
 			throw new AuthApiRequestException("Invalid token");
 		} catch(JwtException e) {
@@ -293,7 +445,7 @@ public class AuthDAOImplementation implements AuthDAO {
 		List<String> failureEmails = new ArrayList<>();
 		
 		// check if the user performing this operation is authenticated
-		User user = isAuthenticated(bearerToken);
+		User user = isAuthenticated(bearerToken, TokenType.ACCESS);
 		
 		// check if he/she is an admin (only admin can perform this operation)
 		UserRoles[] roles = {UserRoles.ADMIN};

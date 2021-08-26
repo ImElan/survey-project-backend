@@ -30,13 +30,23 @@ public class AuthServiceImplementation implements AuthService {
 	}
 
 	@Override
-	public ResponseEntity<AuthResponse> loginWithGoogle(String bearerToken) {
-		return authDao.loginWithGoogle(bearerToken);
+	public ResponseEntity<AuthResponse> loginWithGoogle(String idToken) {
+		return authDao.loginWithGoogle(idToken);
 	}
 
 	@Override
 	public ResponseEntity<Object> grantAccess(String[] emails, UserRoles role, String bearerToken) {
 		return authDao.grantAccess(emails, role, bearerToken);
+	}
+
+	@Override
+	public ResponseEntity<AuthResponse> getAccessTokenUsingRefreshToken(String bearerToken) {
+		return authDao.getAccessTokenUsingRefreshToken(bearerToken);
+	}
+
+	@Override
+	public ResponseEntity<Object> logout(String bearerToken) {
+		return authDao.logout(bearerToken);
 	}
 	
 }

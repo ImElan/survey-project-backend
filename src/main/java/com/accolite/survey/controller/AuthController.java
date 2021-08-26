@@ -28,8 +28,18 @@ public class AuthController {
 //	}
 	
 	@GetMapping("/login/oauth/google")
-	public ResponseEntity<AuthResponse> loginWithGoogle(@RequestHeader("Authorization") String bearerToken) {
-		return authService.loginWithGoogle(bearerToken);
+	public ResponseEntity<AuthResponse> loginWithGoogle(@RequestHeader("Authorization") String idToken) {
+		return authService.loginWithGoogle(idToken);
+	}
+	
+	@GetMapping("/refreshToken/getToken")
+	public ResponseEntity<AuthResponse> getAccessTokenUsingRefreshToken(@RequestHeader("Authorization") String refreshToken) {
+		return authService.getAccessTokenUsingRefreshToken(refreshToken);
+	}
+	
+	@GetMapping("/logout") 
+	public ResponseEntity<Object> logout(@RequestHeader("Authorization") String bearedToken) {
+		return authService.logout(bearedToken);
 	}
 	
 	@GetMapping("/authenticatedRouteCheck")
