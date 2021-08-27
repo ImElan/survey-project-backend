@@ -134,8 +134,8 @@ public class AuthDAOImplementation implements AuthDAO {
 				 * 		2. User not logged out and trying to login from different machine.
 				 * 			- In this case we can send the already existing accessToken to the user.
 				 * 
-				 * 	In both the case we will need a new refresh token. Because in case 1 refresh token would've been cleared from frontend
-				 * 	local storage and in case he/she is using a different machine so we need to send a refresh token.
+				 * 	In both the case we will need a new refresh token. Because in case 1, refresh token would've been cleared from frontend
+				 * 	local storage and in case 2, he/she is using a different machine so we need to send a refresh token.
 				 * 
 				 */
 				
@@ -204,6 +204,10 @@ public class AuthDAOImplementation implements AuthDAO {
 		return new ResponseEntity<AuthResponse>(response, HttpStatus.OK);
 	}
 	
+	
+	/*
+	 * 	Method to logout a user.
+	 */
 	@Override
 	public ResponseEntity<Object> logout(String bearerToken) {
 		User user = isAuthenticated(bearerToken, TokenType.ACCESS);
@@ -282,7 +286,11 @@ public class AuthDAOImplementation implements AuthDAO {
 		// 2. Generate expiration time (1 hour for now)
 		Instant now = Instant.now();
 		
+		/* TESTING (EXPIRATION = 1 MINUTE) */
 		Date expirationTime = Date.from(now.plus(1, ChronoUnit.MINUTES));
+		
+		/* PRODUCTION (EXPIRATION = 1 HOUR) */
+//		Date expirationTime = Date.from(now.plus(1, ChronoUnit.HOURS));
 		
 		// 3. Build and return the token
 		String token = Jwts.builder()
