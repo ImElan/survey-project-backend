@@ -21,11 +21,13 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.accolite.survey.DAO.MailDataDAO;
 import com.accolite.survey.DAO.ResponsesDAO;
 import com.accolite.survey.DAO.UserDAO;
 import com.accolite.survey.entity.MailData;
@@ -47,7 +49,6 @@ import freemarker.template.TemplateNotFoundException;
 
 
 @Controller
-@RequestMapping("/maildata")
 
 public class ReminderSenderController {
 	
@@ -58,7 +59,7 @@ public class ReminderSenderController {
 	UserDAO ud;
 	
 	@Autowired
-	private JavaMailSender mailSender;
+	MailDataDAO m;
 	
 	@Autowired
 	ResponsesService rs;
@@ -75,36 +76,9 @@ public class ReminderSenderController {
 	@Autowired
 	private Configuration config;
 	
-	
-	//Add in MailData
-	@PostMapping("/adddata")
-	@ResponseBody
-	public void saveMailData(@RequestBody MailData m){	
-		md.saveMailData(m);	
-	}
-	
-	
-	//Fetch from Maildata
-	@GetMapping("/getdata")
-	@ResponseBody
-	public List<MailData> getDatafrom()
-	{
-		
-		return md.getDatafromMD();
-		
-	
-	}
-	
-	
-	
-	@GetMapping("/getresponse")
-	@ResponseBody
-	public List<Responses> sendResponse() {
-		
-		return rs.getAllResponses();
-		
-	}
-	
+
+	@Autowired
+	private JavaMailSender mailSender;
 	
 	
 	@GetMapping("/sendremindermail")
@@ -126,18 +100,24 @@ public class ReminderSenderController {
 	    	 }
 	    	   
 	    	int remindDays = 10;
+	    	int maxCount=3;
+	    	
+	    	
 		    List<SurveyFormConfig> li=cs.getAllSurveyFormConfig();
 		    for(SurveyFormConfig j:li)
 		    {
 		    	remindDays=j.getRemindAfterNumberOfDays();
+		    	maxCount=j.getMaxReminderCount();
 		    }
 	    	c.add(Calendar.DAY_OF_MONTH, remindDays);  
 	    	String addDate = sdf.format(c.getTime());
 	    	
-//	    	System.out.println(today);
-//	    	System.out.println(addDate);
-//	    	System.out.println(remindDays);
+	    	int count=i.getRemindercount();
 	    	
+	    	
+	    	
+	    	if(count<maxCount)
+	    	{
 	    	if(addDate.equals(today))
 	    	{    		
 	    		String formid=i.getFormid();
@@ -151,13 +131,20 @@ public class ReminderSenderController {
 //	    		System.out.println(r);
 	    		if(r.isEmpty())
 	    		{
-	    			System.out.println(sendHTMLEmailWithAttachment(email,formid,name));
+	    			System.out.println(sendHTMLEmailWithAttachment(email,formid,name,count));
 	    			i.setLast_sent_date(today);
+	    			i.setRemindercount(count+1);
 	    			md.saveMailData(i);
 	    		}
 	    		
 	    		
-	    	}	
+	    	}
+	    	}
+	    	else
+	    	{
+	    		i.setShowform(false);
+	    		md.saveMailData(i);
+	    	}
 	    	
 	    	
 	    	
@@ -168,21 +155,30 @@ public class ReminderSenderController {
 	
 	
 	
-	public String sendHTMLEmailWithAttachment(String to,String formid,String name) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, freemarker.core.ParseException, IOException, TemplateException{
+	public String sendHTMLEmailWithAttachment(String to,String formid,String name,int count) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, freemarker.core.ParseException, IOException, TemplateException
+	{
 		
 		
 		
 		
 		String from = "accolite.survey@gmail.com";
-//		String to = "prasana.seshadri@gmail.com";
+//		String tow = "nandini.sharma@accolitedigital.com";
 		
 		String URL="accolite.survey.com/forms/"+formid;
 		
 		Map<String, Object> m = new HashMap<>();
 		m.put("Name", name);
 		m.put("URL", URL);
-				
-		Template t = config.getTemplate("reminder.html");
+		Template t = null;
+		if(count!=4)
+		{
+		 t = config.getTemplate("reminder.html");
+		}
+		else
+		{
+			t = config.getTemplate("final_reminder.html");
+		}
+			
 		String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, m);
 		
 		
@@ -191,8 +187,17 @@ public class ReminderSenderController {
 		
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true);
+		
+		if(count!=4)
+		{
+			helper.setSubject("Reminder Alert!");
+		}
+		else
+		{
+			helper.setSubject("Final Reminder Alert!");
+		}
 
-		helper.setSubject("Reminder Alert!!!!!");
+		
 		helper.setFrom(from);
 		helper.setTo(to);
 		helper.setText(html,true);
@@ -202,9 +207,22 @@ public class ReminderSenderController {
 
 		mailSender.send(message);
 		
-//		model.addAttribute("message", "Reminder mail sent");
 		return "Reminder mail sent";
 	}
+	
+	
+	@GetMapping("/showform/{formid}")
+	@ResponseBody
+	boolean showForm(@PathVariable String formid )
+	{
+		System.out.println(formid);
+		User u = null;
+		
+		String email=u.getEmail();
+		MailData x=m.getByIdandMail(formid, email);
+		return x.isShowform();
+	}
+	
 	
 
 }

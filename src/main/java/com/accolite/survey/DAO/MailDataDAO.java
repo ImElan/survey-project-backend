@@ -15,6 +15,9 @@ import com.accolite.survey.entity.MailData;
 		
 		@Query("{date:?0}")
 		List<MailData>	getByDate(String d);
+		
+		@Query("{formid:?0,email:?1}")
+		MailData getByIdandMail(String formid,String email);
 
 	}
 

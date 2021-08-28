@@ -41,8 +41,13 @@ public class SurveyFormConfig {
 	@Max(value = 100,message = "Reminder days should be less than 100")
 	@Field("remind_days")
     private int remindAfterNumberOfDays; 
+	
+	
+	@Field("remind_count")
+	int maxReminderCount; // Max number of times to remind
     
-    //Default Constructor
+   
+	//Default Constructor
     public SurveyFormConfig() {
 
     }
@@ -54,6 +59,15 @@ public class SurveyFormConfig {
         this.daysAfterWhichEmailShouldBeSent = daysAfterWhichEmailShouldBeSent;
         this.remindAfterNumberOfDays = remindAfterNumberOfDays;
     }
+    
+    
+    public int getMaxReminderCount() {
+		return maxReminderCount;
+	}
+	public void setMaxReminderCount(int maxReminderCount) {
+		this.maxReminderCount = maxReminderCount;
+	}
+    
     
     public String getId() {
 		return id;
