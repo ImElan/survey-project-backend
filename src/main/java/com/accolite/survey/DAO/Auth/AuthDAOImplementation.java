@@ -234,7 +234,7 @@ public class AuthDAOImplementation implements AuthDAO {
 	public String authRouteWithRolesCheck(String bearerToken) {
 		User user = isAuthenticated(bearerToken, TokenType.ACCESS);
 		
-		UserRoles[] roles = {UserRoles.HR, UserRoles.PN, UserRoles.EMPLOYEE};
+		UserRoles[] roles = {UserRoles.HR, UserRoles.PM, UserRoles.EMPLOYEE};
 //		UserRoles[] roles = {UserRoles.HR};
 //		UserRoles[] roles = {UserRoles.HR, UserRoles.PN};
 		restrictTo(roles, user);
@@ -287,10 +287,10 @@ public class AuthDAOImplementation implements AuthDAO {
 		Instant now = Instant.now();
 		
 		/* TESTING (EXPIRATION = 1 MINUTE) */
-		Date expirationTime = Date.from(now.plus(1, ChronoUnit.MINUTES));
+//		Date expirationTime = Date.from(now.plus(2, ChronoUnit.MINUTES));
 		
 		/* PRODUCTION (EXPIRATION = 1 HOUR) */
-//		Date expirationTime = Date.from(now.plus(1, ChronoUnit.HOURS));
+		Date expirationTime = Date.from(now.plus(1, ChronoUnit.HOURS));
 		
 		// 3. Build and return the token
 		String token = Jwts.builder()
@@ -315,6 +315,8 @@ public class AuthDAOImplementation implements AuthDAO {
 		
 		// 2. Generate expiration time (1 hour for now)
 		Instant now = Instant.now();
+		
+//		Date expirationTime = Date.from(now.plus(5, ChronoUnit.SECONDS));
 		
 		Date expirationTime = Date.from(now.plus(7, ChronoUnit.DAYS));
 		
@@ -445,7 +447,7 @@ public class AuthDAOImplementation implements AuthDAO {
 		if(user.getRole() == null) {
 			throw new AuthApiRequestException("Please select a role to change the user's role to.");
 		}
-		
+				
 		// see if the user performing this action is logged in.
 		User userPerformingThisOperation = isAuthenticated(bearerToken, TokenType.ACCESS);
 		
@@ -469,12 +471,12 @@ public class AuthDAOImplementation implements AuthDAO {
 		curUser.setRole(user.getRole());
 		userDao.save(curUser);
 		
+		
 		// construct and send the response.
 		HashMap<String,String> response = new HashMap<>();
 		response.put("message", curUser.getName()+" is given "+curUser.getRole()+" access.");
 		return new ResponseEntity<Object>(response, HttpStatus.OK);
 	}
-	
 	
 	/*
 	 * 	Method to change the role of list of users
@@ -539,7 +541,6 @@ public class AuthDAOImplementation implements AuthDAO {
 		// send the response
 		return new ResponseEntity<Object>(response, HttpStatus.OK);
 	}
-
 	
 	/*
 	 * =======================================================================================================================

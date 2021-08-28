@@ -4,5 +4,5 @@ public enum UserRoles {
 	ADMIN,
 	EMPLOYEE,
 	HR,
-	PN
+	PM
 }

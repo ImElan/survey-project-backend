@@ -9,6 +9,8 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+
 /*
  * 	Handler to handle ApiRequestionException
  * 
@@ -39,6 +41,16 @@ public class AuthExceptionHandler {
 		}
 		AuthException authException = new AuthException(
 			"Something went wrong....",
+			HttpStatus.BAD_REQUEST,
+			ZonedDateTime.now(ZoneId.of("Asia/Kolkata"))
+		);
+		return new ResponseEntity<>(authException, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(value = {InvalidFormatException.class})
+	public ResponseEntity<Object> handleAuthorizationException(InvalidFormatException exception) {
+		AuthException authException = new AuthException(
+			"Please select a valid role. [HR, PM, ADMIN, EMPLOYEE]",
 			HttpStatus.BAD_REQUEST,
 			ZonedDateTime.now(ZoneId.of("Asia/Kolkata"))
 		);
