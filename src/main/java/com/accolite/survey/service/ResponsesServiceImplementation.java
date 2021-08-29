@@ -29,15 +29,21 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.accolite.survey.DAO.ResponsesDAO;
+import com.accolite.survey.DAO.Auth.AuthDAOImplementation;
 import com.accolite.survey.Exception.Id.IdNotFoundException;
 import com.accolite.survey.Exception.Id.InvalidIdException;
+import com.accolite.survey.Model.TokenType;
 import com.accolite.survey.controller.MyException;
 import com.accolite.survey.entity.Responses;
+import com.accolite.survey.entity.User;
+import com.accolite.survey.entity.UserRoles;
 
 
 @Service
 @Transactional
 public class ResponsesServiceImplementation implements ResponsesService {
+	@Autowired
+	 AuthDAOImplementation authdao;
 	
 	@Autowired
 	ResponsesDAO responsedao;
@@ -52,13 +58,21 @@ public class ResponsesServiceImplementation implements ResponsesService {
     private JavaMailSender mailSender;
 
 	@Override
-	public Responses addResponse(Responses response) throws MyException, MessagingException {
-		List<Responses> ans = getResponseByFormId(response.getFormId());
+	public Responses addResponse(Responses response,String bearerToken) throws MyException, MessagingException {
+		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
+		UserRoles[] roles = {UserRoles.EMPLOYEE};
+		authdao.restrictTo(roles, user);
+		
+		
+		List<Responses> ans = getResponseByFormId(response.getFormId(),bearerToken);
 		for(int i=0 ; i<ans.size() ; i++) {
 			if(ans.get(i).getUserId().equals(response.getUserId())) {
 				throw new MyException("This user can't fill this form as it's been already filled by this userId\n") ;
 			}
 		}
+		
+		response.setUserId(user.getId());
+		
 		Responses newResponse = responsedao.insert(response);
 		if(response.getSendCopy() == 1) {
 			Sheet copy = responseService.createResponseCopy(response);
@@ -68,12 +82,18 @@ public class ResponsesServiceImplementation implements ResponsesService {
 	}
 
 	@Override
-	public List<Responses> getAllResponses() {
+	public List<Responses> getAllResponses(String bearerToken) {
+		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
+		UserRoles[] roles = {UserRoles.HR};
+		authdao.restrictTo(roles, user);
 		return responsedao.findAll();
 	}
 
 	@Override
-	public List<Responses> getResponseByFormId(String formid) {
+	public List<Responses> getResponseByFormId(String formid,String bearerToken) {
+		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
+		UserRoles[] roles = {UserRoles.HR};
+		authdao.restrictTo(roles, user);
 		List<Responses> response = responsedao.findAll();
 		List<Responses> ans = new ArrayList<>();
 		for(int i=0 ; i<response.size() ; i++) {
@@ -86,6 +106,7 @@ public class ResponsesServiceImplementation implements ResponsesService {
 	
 	@Override
 	public Responses check(String user_id, String form_id) throws MyException {
+		
 		
 		Query query = new Query();
 		Criteria criteria = new Criteria();

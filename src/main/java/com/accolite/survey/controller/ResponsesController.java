@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,25 +30,25 @@ public class ResponsesController {
 	UserService userService ;
 	
 	@PostMapping
-	public String addResponse(@RequestBody Responses response) throws MyException, MessagingException {
+	public String addResponse(@RequestBody Responses response, @RequestHeader("Authorization") String bearerToken) throws MyException, MessagingException {
 		if(response.getUserId()==null || response.getUserId().isBlank()) {
 			return "Please provide UserId" ;
 		}
-		responseService.addResponse(response);
+		responseService.addResponse(response,bearerToken);
 		return "Response Successfully Added" ;
 	}
 	
 	@GetMapping
-	public List<Responses> getAllResponses() {
-		return responseService.getAllResponses();
+	public List<Responses> getAllResponses(@RequestHeader("Authorization") String bearerToken) {
+		return responseService.getAllResponses(bearerToken);
 	}
 	
 	@GetMapping("/{formid}")
-    public List<Responses> getResponseByFormId(@PathVariable String formid) throws MyException {
+    public List<Responses> getResponseByFormId(@PathVariable String formid,@RequestHeader("Authorization") String bearerToken) throws MyException {
 		if(formid==null || formid.isBlank()) {
 			throw new MyException("Please provide a valid formId\n") ;
 		}
-        return responseService.getResponseByFormId(formid) ;
+        return responseService.getResponseByFormId(formid,bearerToken) ;
     }
 	
 	@GetMapping("/{form_id}/{user_id}")
