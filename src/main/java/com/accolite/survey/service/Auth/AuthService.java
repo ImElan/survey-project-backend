@@ -15,4 +15,5 @@ public interface AuthService {
 	String authRouteWithRolesCheck(String bearerToken);
 	ResponseEntity<Object> grantAccess(User user, String bearerToken);
 	ResponseEntity<Object> grantAccess(String[] emails, UserRoles role, String bearerToken);
+	User getUserByEmail(String email);
 }

@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -53,7 +55,7 @@ public class AuthController {
 		return authService.authRouteWithRolesCheck(bearerToken);
 	}
 	
-	@PostMapping("/grantAccess")
+	@PatchMapping("/grantAccess")
 	public ResponseEntity<Object> grantAccess(@RequestBody User user,@RequestHeader("Authorization") String bearerToken) {
 		return authService.grantAccess(user, bearerToken);
 	}
@@ -61,6 +63,11 @@ public class AuthController {
 	@PostMapping("/admin/grantAccess")
 	public ResponseEntity<Object> grantAccess(@RequestBody GrantAccessBody body, @RequestHeader("Authorization") String bearerToken) {	
 		return authService.grantAccess(body.getEmails(), body.getRole(), bearerToken);
+	}
+	
+	@GetMapping("/user/{email}")
+	public User getUserByEmail(@PathVariable("email") String email) {
+		return authService.getUserByEmail(email);
 	}
 	
 }

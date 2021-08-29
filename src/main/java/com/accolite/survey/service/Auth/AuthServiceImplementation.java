@@ -54,5 +54,10 @@ public class AuthServiceImplementation implements AuthService {
 	public ResponseEntity<Object> grantAccess(User user, String bearerToken) {
 		return authDao.grantAccess(user, bearerToken);
 	}
+
+	@Override
+	public User getUserByEmail(String email) {
+		return authDao.getUserByEmail(email);
+	}
 	
 }
