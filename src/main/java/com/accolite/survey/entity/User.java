@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Document("user")
+@Document("Users")
 public class User {
 	@Id
 	private String id;
