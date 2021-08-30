@@ -137,7 +137,7 @@ public class ReminderSenderController {
 //	    		System.out.println(r);
 	    		if(r.isEmpty())
 	    		{
-	    			System.out.println(sendHTMLEmailWithAttachment(email,formid,name,count));
+	    			System.out.println(sendHTMLEmailWithAttachment(email,formid,name,count,maxCount));
 	    			i.setLast_sent_date(today);
 	    			i.setRemindercount(count+1);
 	    			md.saveMailData(i);
@@ -161,7 +161,7 @@ public class ReminderSenderController {
 	
 	
 	
-	public String sendHTMLEmailWithAttachment(String to,String formid,String name,int count) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, freemarker.core.ParseException, IOException, TemplateException
+	public String sendHTMLEmailWithAttachment(String to,String formid,String name,int count,int maxCount) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, freemarker.core.ParseException, IOException, TemplateException
 	{
 		
 		
@@ -176,7 +176,7 @@ public class ReminderSenderController {
 		m.put("Name", name);
 		m.put("URL", URL);
 		Template t = null;
-		if(count!=4)
+		if(count!=(maxCount-1))
 		{
 		 t = config.getTemplate("reminder.html");
 		}
@@ -194,7 +194,7 @@ public class ReminderSenderController {
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true);
 		
-		if(count!=4)
+		if(count!=(maxCount-1))
 		{
 			helper.setSubject("Reminder Alert!");
 		}
