@@ -50,14 +50,21 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.accolite.survey.DAO.Auth.AuthDAOImplementation;
+import com.accolite.survey.Model.TokenType;
 import com.accolite.survey.entity.MailData;
 import com.accolite.survey.entity.SurveyFormConfig;
+import com.accolite.survey.entity.User;
+import com.accolite.survey.entity.UserRoles;
 import com.accolite.survey.service.ConfigFormService;
 import com.accolite.survey.service.FormService;
 import com.accolite.survey.service.MailDataService;
@@ -69,9 +76,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-
-@Controller
+@CrossOrigin(origins = "http://localhost:3000")
+@RestController
 public class SurveySender {
+	@Autowired
+	 AuthDAOImplementation authdao;
+	
 
 	@Autowired
 	private JavaMailSender mailSender;
@@ -101,10 +111,18 @@ public class SurveySender {
 
 	@PostMapping("/accolite/filter_employees")
 	@ResponseBody
-	public String filterEmployee(@RequestBody MailData maildata) throws Exception {
+	public String filterEmployee(@RequestBody MailData maildata,@RequestHeader("Authorization") String bearerToken) throws Exception {
 
+		
+		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
+		UserRoles[] roles = {UserRoles.HR};
+		authdao.restrictTo(roles, user);
+		
+		
+		
+		
 		// Default value for 'the no of days' after mail
-
+        
 		int no_of_days_after_mail = 180;
 
 		// Initialising the received data from PostMapping
@@ -272,8 +290,16 @@ public class SurveySender {
 
 	@PostMapping("/accolite/send_email")
 	@ResponseBody
-	public String sendMail(@RequestBody MailData maildata) throws Exception {
+	public String sendMail(@RequestBody MailData maildata,@RequestHeader("Authorization") String bearerToken) throws Exception {
 
+
+		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
+		UserRoles[] roles = {UserRoles.HR};
+		authdao.restrictTo(roles, user);
+		
+		
+		
+		
 		// To check an Illegal API Call
 
 		if (mainformid == null && mainfrom_date == null && mainto_date == null) {
@@ -362,7 +388,7 @@ public class SurveySender {
 
 								String from = "accolite.survey@gmail.com";
 
-								String URL = "accolite.survey.com/forms/" + mainformid + "";
+								String URL = "http://localhost:3000/forms/" + mainformid + "";
 
 								MimeMessage message = mailSender.createMimeMessage();
 								MimeMessageHelper helper = new MimeMessageHelper(message, true);

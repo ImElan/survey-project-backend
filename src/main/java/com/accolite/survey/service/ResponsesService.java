@@ -11,11 +11,11 @@ import com.accolite.survey.entity.Responses;
 
 public interface ResponsesService {
 
-	public Responses addResponse(Responses response) throws MyException, MessagingException;
+	public Responses addResponse(Responses response,String bearerToken) throws MyException, MessagingException;
 
-	public List<Responses> getAllResponses();
+	public List<Responses> getAllResponses(String bearerToken);
 
-	public List<Responses> getResponseByFormId(String formid);
+	public List<Responses> getResponseByFormId(String formid,String bearerToken);
 	
 	public Responses check(String user_id, String form_id) throws MyException;
 	

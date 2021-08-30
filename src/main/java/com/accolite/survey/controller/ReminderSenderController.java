@@ -24,16 +24,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.accolite.survey.DAO.MailDataDAO;
 import com.accolite.survey.DAO.ResponsesDAO;
 import com.accolite.survey.DAO.UserDAO;
+import com.accolite.survey.DAO.Auth.AuthDAOImplementation;
+import com.accolite.survey.Model.TokenType;
 import com.accolite.survey.entity.MailData;
 import com.accolite.survey.entity.Responses;
 import com.accolite.survey.entity.SurveyFormConfig;
 import com.accolite.survey.entity.User;
+import com.accolite.survey.entity.UserRoles;
 import com.accolite.survey.service.ConfigFormService;
 
 import com.accolite.survey.service.MailDataService;
@@ -51,6 +55,8 @@ import freemarker.template.TemplateNotFoundException;
 @Controller
 
 public class ReminderSenderController {
+	@Autowired
+	 AuthDAOImplementation authdao;
 	
 	@Autowired
 	MailDataService md;
@@ -131,7 +137,7 @@ public class ReminderSenderController {
 //	    		System.out.println(r);
 	    		if(r.isEmpty())
 	    		{
-	    			System.out.println(sendHTMLEmailWithAttachment(email,formid,name,count));
+	    			System.out.println(sendHTMLEmailWithAttachment(email,formid,name,count,maxCount,today));
 	    			i.setLast_sent_date(today);
 	    			i.setRemindercount(count+1);
 	    			md.saveMailData(i);
@@ -155,7 +161,7 @@ public class ReminderSenderController {
 	
 	
 	
-	public String sendHTMLEmailWithAttachment(String to,String formid,String name,int count) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, freemarker.core.ParseException, IOException, TemplateException
+	public String sendHTMLEmailWithAttachment(String to,String formid,String name,int count,int maxCount,String today) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, freemarker.core.ParseException, IOException, TemplateException
 	{
 		
 		
@@ -164,13 +170,14 @@ public class ReminderSenderController {
 		String from = "accolite.survey@gmail.com";
 //		String tow = "nandini.sharma@accolitedigital.com";
 		
-		String URL="accolite.survey.com/forms/"+formid;
+		String URL="http://localhost:3000/forms/"+formid;
 		
 		Map<String, Object> m = new HashMap<>();
 		m.put("Name", name);
 		m.put("URL", URL);
+		m.put("Date",today);
 		Template t = null;
-		if(count!=4)
+		if(count!=(maxCount-1))
 		{
 		 t = config.getTemplate("reminder.html");
 		}
@@ -188,7 +195,7 @@ public class ReminderSenderController {
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true);
 		
-		if(count!=4)
+		if(count!=(maxCount-1))
 		{
 			helper.setSubject("Reminder Alert!");
 		}
@@ -213,11 +220,11 @@ public class ReminderSenderController {
 	
 	@GetMapping("/showform/{formid}")
 	@ResponseBody
-	boolean showForm(@PathVariable String formid )
+	boolean showForm(@PathVariable String formid,@RequestHeader("Authorization") String bearerToken )
 	{
 		System.out.println(formid);
-		User u = null;
 		
+		User u = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
 		String email=u.getEmail();
 		MailData x=m.getByIdandMail(formid, email);
 		return x.isShowform();

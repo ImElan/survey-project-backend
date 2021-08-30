@@ -457,12 +457,12 @@ public class AuthDAOImplementation implements AuthDAO {
 		
 		// get the user whose role have to be changed.
 		Query query = new Query();
-		query.addCriteria(Criteria.where("id").is(user.getId()));
+		query.addCriteria(Criteria.where("email").is(user.getEmail()));
 		List<User> users = mongoTemplate.find(query, User.class);
 		
 		// check if user exists for the given user id.
 		if(users == null || users.size() == 0) {
-			throw new AuthApiRequestException("No user exists with the given id");
+			throw new AuthApiRequestException("No user exists with the given email id");
 		}
 		
 		User curUser = users.get(0);
@@ -476,6 +476,29 @@ public class AuthDAOImplementation implements AuthDAO {
 		HashMap<String,String> response = new HashMap<>();
 		response.put("message", curUser.getName()+" is given "+curUser.getRole()+" access.");
 		return new ResponseEntity<Object>(response, HttpStatus.OK);
+	}
+	
+	/*
+	 *  Method to get user by email.
+	 */
+	@Override
+	public User getUserByEmail(String email) {
+		if(email == null) {
+			throw new AuthApiRequestException("Please provide an email id.");
+		}
+		
+		// get the user using given email id.
+		Query query = new Query();
+		query.addCriteria(Criteria.where("email").is(email));
+		List<User> users = mongoTemplate.find(query, User.class);
+		
+		// check if user exists for the given user id.
+		if(users == null || users.size() == 0) {
+			throw new AuthApiRequestException("No user exists with the given email id");
+		}
+		
+		User user = users.get(0);
+		return user;
 	}
 	
 	/*
