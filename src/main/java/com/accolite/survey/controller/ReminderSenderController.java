@@ -137,7 +137,7 @@ public class ReminderSenderController {
 //	    		System.out.println(r);
 	    		if(r.isEmpty())
 	    		{
-	    			System.out.println(sendHTMLEmailWithAttachment(email,formid,name,count,maxCount));
+	    			System.out.println(sendHTMLEmailWithAttachment(email,formid,name,count,maxCount,today));
 	    			i.setLast_sent_date(today);
 	    			i.setRemindercount(count+1);
 	    			md.saveMailData(i);
@@ -161,7 +161,7 @@ public class ReminderSenderController {
 	
 	
 	
-	public String sendHTMLEmailWithAttachment(String to,String formid,String name,int count,int maxCount) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, freemarker.core.ParseException, IOException, TemplateException
+	public String sendHTMLEmailWithAttachment(String to,String formid,String name,int count,int maxCount,String today) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, freemarker.core.ParseException, IOException, TemplateException
 	{
 		
 		
@@ -175,6 +175,7 @@ public class ReminderSenderController {
 		Map<String, Object> m = new HashMap<>();
 		m.put("Name", name);
 		m.put("URL", URL);
+		m.put("Date",today);
 		Template t = null;
 		if(count!=(maxCount-1))
 		{
