@@ -170,7 +170,7 @@ public class ReminderSenderController {
 		String from = "accolite.survey@gmail.com";
 //		String tow = "nandini.sharma@accolitedigital.com";
 		
-		String URL="accolite.survey.com/forms/"+formid;
+		String URL="http://localhost:3000/forms/"+formid;
 		
 		Map<String, Object> m = new HashMap<>();
 		m.put("Name", name);

@@ -12,18 +12,18 @@ public class Form {
 	private String id;
 	private String formTitle;
 	private String formDescription;
-	private boolean isEditable;
+	private boolean isFormEditable;
 	private List<SurveyQuestion> surveyQuestions;
 	private String createdBy;
 	
 
-	public Form(String id, String formTitle, String formDescription, boolean isEditable, List<SurveyQuestion> surveyQuestions,
+	public Form(String id, String formTitle, String formDescription, boolean isFormEditable, List<SurveyQuestion> surveyQuestions,
 			String createdBy) {
 		super();
 		this.id = id;
 		this.formTitle = formTitle;
 		this.formDescription = formDescription;
-		this.isEditable = isEditable;
+		this.isFormEditable = isFormEditable;
 		this.surveyQuestions = surveyQuestions;
 		this.createdBy = createdBy;
 		
@@ -71,12 +71,12 @@ public class Form {
 		this.formDescription = formDescription;
 	}
 
-	public boolean isEditable() {
-		return isEditable;
+	public boolean isFormEditable() {
+		return isFormEditable;
 	}
 
-	public void setIsEditable(boolean isEditable) {
-		this.isEditable = isEditable;
+	public void setIsFormEditable(boolean isFormEditable) {
+		this.isFormEditable = isFormEditable;
 	}
 
 	public List<SurveyQuestion> getSurveyQuestions() {

@@ -388,7 +388,7 @@ public class SurveySender {
 
 								String from = "accolite.survey@gmail.com";
 
-								String URL = "accolite.survey.com/forms/" + mainformid + "";
+								String URL = "http://localhost:3000/forms/" + mainformid + "";
 
 								MimeMessage message = mailSender.createMimeMessage();
 								MimeMessageHelper helper = new MimeMessageHelper(message, true);
