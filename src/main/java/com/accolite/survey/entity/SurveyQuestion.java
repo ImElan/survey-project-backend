@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class SurveyQuestion {
-
+	
+	private String questionId;
 	private QuestionType questionType;
 	private String question;
 	private List<String> options;
@@ -12,15 +13,24 @@ public class SurveyQuestion {
 	private boolean isHalfStarAllowed;
 	private boolean isRequired;
 
-	public SurveyQuestion(QuestionType questionType, String question, List<String> options, String noOfStars,
+	public SurveyQuestion(String questionId, QuestionType questionType, String question, List<String> options, String noOfStars,
 			boolean isHalfStarAllowed, boolean isRequired) {
 		super();
+		this.questionId = questionId;
 		this.questionType = questionType;
 		this.question = question;
 		this.options = options;
 		this.noOfStars = noOfStars;
 		this.isHalfStarAllowed = isHalfStarAllowed;
 		this.isRequired = isRequired;
+	}
+	
+	public String getQuestionId() {
+		return questionId;
+	}
+
+	public void setQuestionId(String questionId) {
+		this.questionId = questionId;
 	}
 
 	public boolean isRequired() {
