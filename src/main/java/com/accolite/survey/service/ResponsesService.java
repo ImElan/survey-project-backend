@@ -5,6 +5,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 
 import org.apache.poi.ss.usermodel.Sheet;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.accolite.survey.controller.MyException;
 import com.accolite.survey.entity.Responses;
@@ -22,4 +23,5 @@ public interface ResponsesService {
 	public Sheet createResponseCopy(Responses response);
 	
 	public String sendEmailWithAttachment(String toEmail, Sheet attachment) throws MessagingException;
+	public Responses updateResponse(Responses responses);
 }

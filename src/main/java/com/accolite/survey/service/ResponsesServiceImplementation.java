@@ -213,4 +213,20 @@ public class ResponsesServiceImplementation implements ResponsesService {
 		
 	}
 
+	@Override
+	public Responses updateResponse(Responses responses) {
+		// TODO Auto-generated method stub
+		Query query = new Query();
+		Criteria criteria = new Criteria();
+		criteria.and("formid").is(responses.getFormId());
+
+		criteria.and("userid").is(responses.getUserId());
+		query.addCriteria(criteria);
+		List<Responses> returnedResponses = mongoTemplate.find(query, Responses.class);
+		Responses oldResponses=returnedResponses.get(0);
+		oldResponses.setAnswers(responses.getAnswers());
+		responsedao.save(oldResponses);
+		return oldResponses;
+	}
+
 }
