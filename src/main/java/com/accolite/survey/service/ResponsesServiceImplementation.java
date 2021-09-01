@@ -60,6 +60,7 @@ public class ResponsesServiceImplementation implements ResponsesService {
 	@Override
 	public Responses addResponse(Responses response,String bearerToken) throws MyException, MessagingException {
 		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
+		System.out.println(user);
 		UserRoles[] roles = {UserRoles.EMPLOYEE};
 		authdao.restrictTo(roles, user);
 		
@@ -92,7 +93,7 @@ public class ResponsesServiceImplementation implements ResponsesService {
 	@Override
 	public List<Responses> getResponseByFormId(String formid,String bearerToken) {
 		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
-		UserRoles[] roles = {UserRoles.HR};
+		UserRoles[] roles = {UserRoles.HR,UserRoles.EMPLOYEE};
 		authdao.restrictTo(roles, user);
 		List<Responses> response = responsedao.findAll();
 		List<Responses> ans = new ArrayList<>();
@@ -232,6 +233,22 @@ public class ResponsesServiceImplementation implements ResponsesService {
         mailSender.send(mimeMessage);
         return "Copy of response sent successfully";
 		
+	}
+
+	@Override
+	public Responses updateResponse(Responses responses) {
+		// TODO Auto-generated method stub
+		Query query = new Query();
+		Criteria criteria = new Criteria();
+		criteria.and("formid").is(responses.getFormId());
+
+		criteria.and("userid").is(responses.getUserId());
+		query.addCriteria(criteria);
+		List<Responses> returnedResponses = mongoTemplate.find(query, Responses.class);
+		Responses oldResponses=returnedResponses.get(0);
+		oldResponses.setAnswers(responses.getAnswers());
+		responsedao.save(oldResponses);
+		return oldResponses;
 	}
 
 }

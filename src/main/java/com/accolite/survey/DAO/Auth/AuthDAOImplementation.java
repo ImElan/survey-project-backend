@@ -290,7 +290,7 @@ public class AuthDAOImplementation implements AuthDAO {
 //		Date expirationTime = Date.from(now.plus(2, ChronoUnit.MINUTES));
 		
 		/* PRODUCTION (EXPIRATION = 1 HOUR) */
-		Date expirationTime = Date.from(now.plus(1, ChronoUnit.HOURS));
+		Date expirationTime = Date.from(now.plus(7, ChronoUnit.DAYS));
 		
 		// 3. Build and return the token
 		String token = Jwts.builder()

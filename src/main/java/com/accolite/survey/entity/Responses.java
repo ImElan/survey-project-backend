@@ -43,11 +43,16 @@ public class Responses {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	public ArrayList<QuestionType> getQuestiontype() {
+	public ArrayList<QuestionType> getQuestiontypes() {
 		return questiontypes;
 	}
-	public void setQuestiontype(ArrayList<QuestionType> questiontypes) {
+	public void setQuestiontypes(ArrayList<QuestionType> questiontypes) {
 		this.questiontypes = questiontypes;
+	}
+	@Override
+	public String toString() {
+		return "Responses [id=" + id + ", formId=" + formId + ", userId=" + userId + ", questiontypes=" + questiontypes
+				+ ", questions=" + questions + ", answers=" + answers + ", sendCopy=" + sendCopy + "]";
 	}
 	public ArrayList<String> getQuestions() {
 		return questions;
