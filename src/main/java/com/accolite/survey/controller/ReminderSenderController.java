@@ -20,6 +20,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,6 +55,8 @@ import freemarker.template.TemplateNotFoundException;
 
 @Controller
 
+@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/accolite")
 public class ReminderSenderController {
 	@Autowired
 	 AuthDAOImplementation authdao;

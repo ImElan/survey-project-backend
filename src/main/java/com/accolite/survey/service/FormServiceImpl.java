@@ -43,7 +43,7 @@ public class FormServiceImpl implements FormService {
 	public Form getFormByID(String id,String bearerToken) {
 		// TODO Auto-generated method stub
 		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
-		UserRoles[] roles = {UserRoles.HR};
+		UserRoles[] roles = {UserRoles.EMPLOYEE,UserRoles.HR};
 		authdao.restrictTo(roles, user);
 		Query query = new Query();
 		query.addCriteria(Criteria.where("id").is(id));
@@ -60,7 +60,7 @@ public class FormServiceImpl implements FormService {
 		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
 		UserRoles[] roles = {UserRoles.HR};
 		authdao.restrictTo(roles, user);
-		form.setCreatedBy(user.getName());
+		form.setCreatedBy(user.getId());
 		formDAO.save(form);
 		return true;
 	}
@@ -68,10 +68,15 @@ public class FormServiceImpl implements FormService {
 	@Override
 	public List<Form> getAllForm(String createdBy,String bearerToken) {
 		// TODO Auto-generated method stub
+		System.out.println("Get all form ran");
 		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
 		UserRoles[] roles = {UserRoles.HR};
 		authdao.restrictTo(roles, user);
-		return formDAO.getAllForm(createdBy);
+		Query query = new Query();
+		query.addCriteria(Criteria.where("createdBy").is(createdBy));
+		List<Form> forms = mongoTemplate.find(query, Form.class);
+//		return formDAO.getAllForm(createdBy);
+		return forms;
 	}
 
 	@Override

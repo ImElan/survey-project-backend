@@ -8,24 +8,28 @@ public class SurveyQuestion {
 	private String questionId;
 	private QuestionType questionType;
 	private String question;
+
 	private List<String> options;
 	private String noOfStars;
 	private boolean isHalfStarAllowed;
 	private boolean isRequired;
 	private String imageData;
 
-	public SurveyQuestion(String questionId, QuestionType questionType, String question, List<String> options, String noOfStars,
-			boolean isHalfStarAllowed, boolean isRequired, String imageData) {
+
+	public SurveyQuestion(QuestionType questionType, String question, String questionId, List<String> options,
+			String noOfStars, boolean isHalfStarAllowed, boolean isRequired, String imageData) {
 		super();
 		this.questionId = questionId;
 		this.questionType = questionType;
 		this.question = question;
+		this.questionId = questionId;
 		this.options = options;
 		this.noOfStars = noOfStars;
 		this.isHalfStarAllowed = isHalfStarAllowed;
 		this.isRequired = isRequired;
 		this.imageData = imageData;
 	}
+
 	
 	public void setImageData(String imageData) {
 	  	this.imageData = imageData;

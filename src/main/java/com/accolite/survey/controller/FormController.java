@@ -36,6 +36,7 @@ public class FormController{
 	
 	@GetMapping("/formbyhr/{createdBy}")
 	public List<Form> getAllForm(@PathVariable String createdBy,@RequestHeader("Authorization") String bearerToken){
+		System.out.println(bearerToken+" "+createdBy);
 		return formService.getAllForm(createdBy,bearerToken);
 		//return null;
 	}
