@@ -455,6 +455,8 @@ public class AuthDAOImplementation implements AuthDAO {
 		UserRoles[] allowedRolesToAccessThisRoute = {UserRoles.ADMIN, UserRoles.HR};
 		restrictTo(allowedRolesToAccessThisRoute, userPerformingThisOperation);
 		
+//		System.out.println("\n\n\n"+user.getEmail()+"\n\n\n");
+		
 		// get the user whose role have to be changed.
 		Query query = new Query();
 		query.addCriteria(Criteria.where("email").is(user.getEmail()));
