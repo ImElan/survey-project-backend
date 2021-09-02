@@ -89,6 +89,7 @@ public class FormServiceImpl implements FormService {
 		savedForm.setFormDescription(form.getFormDescription());
 		savedForm.setFormTitle(form.getFormTitle());
 		savedForm.setSurveyQuestions(form.getSurveyQuestions());
+		savedForm.setIsFormEditable(form.isFormEditable());
 		formDAO.save(savedForm);
 		return true;
 	}
