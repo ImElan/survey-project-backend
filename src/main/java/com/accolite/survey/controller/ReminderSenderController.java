@@ -58,7 +58,7 @@ import freemarker.template.TemplateNotFoundException;
 
 @Controller
 
-//@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/accolite")
 public class ReminderSenderController {
 	@Autowired
