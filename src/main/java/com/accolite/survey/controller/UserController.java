@@ -50,6 +50,7 @@ public class UserController {
 	
 	@GetMapping("/{employeeId}")
 	public ResponseEntity getUserByEmployeeId(@PathVariable String employeeId) {
+		//System.out.println("/n/n/n/n/n"+ResponseEntity.ok(userService.getUserByEmployeeId(employeeId))+"/n/n/n/n/n/n/n");
 		return ResponseEntity.ok(userService.getUserByEmployeeId(employeeId));
 	}
 

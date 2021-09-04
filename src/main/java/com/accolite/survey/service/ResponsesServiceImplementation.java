@@ -2,7 +2,7 @@ package com.accolite.survey.service;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +27,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import com.accolite.survey.DAO.ResponsesDAO;
 import com.accolite.survey.DAO.Auth.AuthDAOImplementation;
@@ -34,9 +35,12 @@ import com.accolite.survey.Exception.Id.IdNotFoundException;
 import com.accolite.survey.Exception.Id.InvalidIdException;
 import com.accolite.survey.Model.TokenType;
 import com.accolite.survey.controller.MyException;
+import com.accolite.survey.entity.Form;
 import com.accolite.survey.entity.Responses;
 import com.accolite.survey.entity.User;
 import com.accolite.survey.entity.UserRoles;
+
+import freemarker.template.Template;
 
 
 @Service
@@ -56,6 +60,9 @@ public class ResponsesServiceImplementation implements ResponsesService {
 	
 	@Autowired
     private JavaMailSender mailSender;
+	
+	@Autowired
+	FormService formService;
 
 	@Override
 	public Responses addResponse(Responses response,String bearerToken) throws MyException, MessagingException {
@@ -73,11 +80,12 @@ public class ResponsesServiceImplementation implements ResponsesService {
 		}
 		
 		response.setUserId(user.getId());
-		
+        Form form = formService.getFormByID(response.getFormId(), bearerToken);
+        //System.out.println("\n\n\n\n\n\n"+form.getFormTitle()+"\n\n\n\n");
 		Responses newResponse = responsedao.insert(response);
 		if(response.getSendCopy() == 1) {
-			Sheet copy = responseService.createResponseCopy(response);
-		    responseService.sendEmailWithAttachment(response.getUserId(), copy);
+			Sheet copy = responseService.createResponseCopy(response, form.getFormTitle());
+		    responseService.sendEmailWithAttachment(user.getEmail(), user.getName(), form.getFormTitle(), copy);
 		}
 		return newResponse;
 	}
@@ -126,31 +134,25 @@ public class ResponsesServiceImplementation implements ResponsesService {
 		query.addCriteria(criteria);
 		List<Responses> responses = mongoTemplate.find(query, Responses.class);
 		
-		if(responses == null || responses.isEmpty()) {
-			
-			throw new IdNotFoundException("Response with particular user id is not found");
-			
+		if(responses == null || responses.isEmpty()) {		
+			throw new IdNotFoundException("Response with particular user id is not found");	
 		}
 		
-		else {
-			
+		else {	
 			return responses.get(0);
-		
 		}
-
 	}
 
 	
 	@Override
-	public Sheet createResponseCopy(Responses response) {
+	public Sheet createResponseCopy(Responses response, String title) {
 		        
 		        //Create workbook in .xlsx format
 				Workbook workbook = new XSSFWorkbook();
-				Sheet sh = workbook.createSheet("Survey Response");
+				Sheet sh = workbook.createSheet(title+"_Response");
 				try {
-					
-					//Create top row with column headings
-					String[] columnHeadings = {"S.No.","Questions","Answers"};
+									
+					String[] columnHeadings = {"Q.No.","Questions","Answers"};
 					Font headerFont = workbook.createFont();
 					headerFont.setBold(true);
 					headerFont.setFontHeightInPoints((short)12);
@@ -178,7 +180,7 @@ public class ResponsesServiceImplementation implements ResponsesService {
 					//create question-answer map
 					ArrayList<String> questions = response.getQuestions();
 					ArrayList<String> answers = response.getAnswers();
-					Map<String, String> ques_ans = new HashMap<String, String>();
+					Map<String, String> ques_ans = new LinkedHashMap<String, String>();
 					for(int i = 0; i < questions.size(); i++) {
 						ques_ans.put(questions.get(i), answers.get(i));
 						
@@ -199,7 +201,7 @@ public class ResponsesServiceImplementation implements ResponsesService {
 						sh.autoSizeColumn(i);
 					}
 
-					FileOutputStream fileOut = new FileOutputStream("temp.xlsx");
+					FileOutputStream fileOut = new FileOutputStream(title+"_response.xlsx");
 					workbook.write(fileOut);
 					fileOut.close();
 					workbook.close();
@@ -213,10 +215,10 @@ public class ResponsesServiceImplementation implements ResponsesService {
 
 	
 	@Override
-	public String sendEmailWithAttachment(String toEmail, Sheet attachment) throws MessagingException {
+	public String sendEmailWithAttachment(String toEmail, String userName, String title, Sheet attachment) throws MessagingException {
 		
-		String subject = "Accolite Digital India Pvt Ltd - Employee Survey";
-		String body = "Thank you for taking the survey for happiness index. Your copy of response is attached here.";
+		String subject = title + " - Accolite Digital India Pvt Ltd.";
+		String body = "Hello "+userName+" !\n\nThank you for taking the survey. Your copy of response is attached here.\n\nThanks and Regards,\nHR Team";
 		
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 
@@ -227,7 +229,7 @@ public class ResponsesServiceImplementation implements ResponsesService {
         mimeMessageHelper.setSubject(subject);
         mimeMessageHelper.setText(body);
 
-        FileSystemResource fileSystem = new FileSystemResource("temp.xlsx");
+        FileSystemResource fileSystem = new FileSystemResource(title+"_response.xlsx");
         mimeMessageHelper.addAttachment(fileSystem.getFilename(), fileSystem);
         
         mailSender.send(mimeMessage);

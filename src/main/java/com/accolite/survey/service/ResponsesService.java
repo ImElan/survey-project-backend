@@ -20,8 +20,9 @@ public interface ResponsesService {
 	
 	public Responses check(String user_id, String form_id) throws MyException;
 	
-	public Sheet createResponseCopy(Responses response);
+	public Sheet createResponseCopy(Responses response, String title);
 	
-	public String sendEmailWithAttachment(String toEmail, Sheet attachment) throws MessagingException;
+	public String sendEmailWithAttachment(String toEmail, String userName, String title, Sheet attachment) throws MessagingException;
+	
 	public Responses updateResponse(Responses responses);
 }

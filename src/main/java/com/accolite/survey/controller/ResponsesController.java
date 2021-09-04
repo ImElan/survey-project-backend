@@ -31,12 +31,12 @@ public class ResponsesController {
 	
 	@Autowired
 	UserService userService ;
-	
+
 	@PostMapping
 	public String addResponse(@RequestBody Responses response, @RequestHeader("Authorization") String bearerToken) throws MyException, MessagingException {
 		if(response.getUserId()==null || response.getUserId().isBlank()) {
 			return "Please provide UserId" ;
-		}System.out.println("\n\n\n\n"+response+"\n\n\n");
+		}
 		responseService.addResponse(response,bearerToken);
 		return "Response Successfully Added" ;
 	}
@@ -63,14 +63,4 @@ public class ResponsesController {
 		return responseService.updateResponse(responses);
 		//return null;
 	}
-//	@GetMapping("/send-copy/{form_id}/{user_id}")
-//	public String sendResponseCopy(@PathVariable String user_id, @PathVariable String form_id) throws MyException, MessagingException{
-//
-//		Responses response = responseService.check(user_id, form_id);
-//		if(response.getSendCopy() == 0) {
-//			return "User doesn't want copy of response";
-//		}
-//		Sheet copy = responseService.createResponseCopy(response);
-//	    return responseService.sendEmailWithAttachment(user_id, copy);
-//	}
 }
