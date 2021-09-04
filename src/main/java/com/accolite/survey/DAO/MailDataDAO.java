@@ -18,6 +18,9 @@ import com.accolite.survey.entity.MailData;
 		
 		@Query("{formid:?0,email:?1}")
 		MailData getByIdandMail(String formid,String email);
+		
+		@Query("{formid:?0,remindercount: {$lt: ?1}}")
+		List<MailData> getByIdandCount(String formid,int remindercount);
 
 	}
 

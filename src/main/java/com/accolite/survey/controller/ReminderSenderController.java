@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +16,8 @@ import java.util.Optional;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -55,126 +58,288 @@ import freemarker.template.TemplateNotFoundException;
 
 @Controller
 
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/accolite")
 public class ReminderSenderController {
 	@Autowired
-	 AuthDAOImplementation authdao;
-	
+	AuthDAOImplementation authdao;
+
 	@Autowired
-	MailDataService md;
-	
+	MailDataService ms;
+
 	@Autowired
 	UserDAO ud;
-	
+
 	@Autowired
-	MailDataDAO m;
-	
+	MailDataDAO md;
+
 	@Autowired
 	ResponsesService rs;
-	
+
 	@Autowired
 	ResponsesDAO rd;
-	
+
 	@Autowired
 	UserService us;
-	
+
 	@Autowired
 	ConfigFormService cs;
-	
+
 	@Autowired
 	private Configuration config;
-	
+
 
 	@Autowired
 	private JavaMailSender mailSender;
-	
-	
-	@GetMapping("/sendremindermail")
+
+
+
+
+	@GetMapping("/senddetails/{formid}")
 	@ResponseBody
-	public void sendreminder() throws Exception
+	String returnDetails(@PathVariable String formid) throws Exception
 	{
-		List<MailData> l=md.getDatafromMD();
-	    for(MailData i:l)
-	    {
-	    	String today = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
-	    	String lsdate=i.getLast_sent_date();
-	    	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-	    	Calendar c = Calendar.getInstance();
-	    	try{
-	    	   
-	    	   c.setTime(sdf.parse(lsdate));
-	    	}catch(ParseException e){
-	    		e.printStackTrace();
-	    	 }
-	    	   
-	    	int remindDays = 10;
-	    	int maxCount=3;
-	    	
-	    	
-		    List<SurveyFormConfig> li=cs.getAllSurveyFormConfig();
-		    for(SurveyFormConfig j:li)
-		    {
-		    	remindDays=j.getRemindAfterNumberOfDays();
-		    	maxCount=j.getMaxReminderCount();
-		    }
-	    	c.add(Calendar.DAY_OF_MONTH, remindDays);  
-	    	String addDate = sdf.format(c.getTime());
-	    	
-	    	int count=i.getRemindercount();
-	    	
-	    	
-	    	
-	    	if(count<maxCount)
-	    	{
-	    	if(addDate.equals(today))
-	    	{    		
-	    		String formid=i.getFormid();
-	    		String email=i.getEmail();
-	    		String name=i.getName();
-	    		
-	    		User u=ud.getByEmail(email);
-	    		String uid=u.getId();
-	    		
-	    		Optional<Responses> r=rd.findByFormIdandUserId(formid, uid);
-//	    		System.out.println(r);
-	    		if(r.isEmpty())
-	    		{
-	    			System.out.println(sendHTMLEmailWithAttachment(email,formid,name,count,maxCount,today));
-	    			i.setLast_sent_date(today);
-	    			i.setRemindercount(count+1);
-	    			md.saveMailData(i);
-	    		}
-	    		
-	    		
-	    	}
-	    	}
-	    	else
-	    	{
-	    		i.setShowform(false);
-	    		md.saveMailData(i);
-	    	}
-	    	
-	    	
-	    	
-	    }
+
+		JSONArray ja = new JSONArray();
+		int remindDays = 10;
+		int maxCount=3;
+
+		List<SurveyFormConfig> li=cs.getAllSurveyFormConfig();
+		for(SurveyFormConfig j:li)
+		{
+			remindDays=j.getRemindAfterNumberOfDays();
+			maxCount=j.getMaxReminderCount();
+		}
+
+		List<MailData> l=md.getByIdandCount(formid,maxCount+1);
+		
+		for(MailData i : l)
+		{
+			
+			String today = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+			String lsdate=i.getLast_sent_date();
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			Calendar c = Calendar.getInstance();
+			try
+			{
+
+				c.setTime(sdf.parse(lsdate));
+			}
+			catch(ParseException e)
+			{
+				e.printStackTrace();
+			}
+
+			c.add(Calendar.DAY_OF_MONTH, remindDays);  
+			String addDate = sdf.format(c.getTime());
+
+			int count=i.getRemindercount();
+
+			Date d1=sdf.parse(addDate);
+			Date d2=sdf.parse(today);
+
+//			System.out.println(d1);
+//			System.out.println(d2);
+
+			if(count<maxCount)
+			{
+
+				if(d1.compareTo(d2)<=0)
+				{    		
+//					String formid=i.getFormid();
+//					String url=i.getUrl();
+
+					String email=i.getEmail();
+					String name=i.getName();
+					String bu=i.getBu();
+					String acc=i.getAcc();
+					String convdoj=i.getDoj();
+					String empcode=i.getEmpcode();
+
+					User u=ud.getByEmail(email);
+					Optional<Responses> r = null;
+					if(u!=null)
+					{
+						String uid=u.getId();
+						r=rd.findByFormIdandUserId(formid, uid);
+					}
+					if(r==null || u==null || r.isEmpty() )
+					{
+						JSONObject jsonObject = new JSONObject();
+
+						jsonObject.put("Employee Name", name);
+						jsonObject.put("Email Mail ID", email);
+						jsonObject.put("Employee DOJ", convdoj);
+						jsonObject.put("Employee Code", empcode);
+						jsonObject.put("Employee BU", bu);
+						jsonObject.put("Employee Account", acc);
+
+						ja.put(jsonObject);
+					}
+				}
+
+			}
+			else
+			{
+				Date d3=sdf.parse(lsdate);
+				System.out.println(d3.compareTo(d2));
+				if(d3.compareTo(d2)<0)
+				{
+					i.setShowform(false);
+					ms.saveMailData(i);
+				}
+			}
+
+
+		}
+
+		return ja.toString();
 	}
-	
-	
-	
-	
-	
+
+
+	@PostMapping("/send_reminder")
+	@ResponseBody
+	public void sendMail(@RequestBody ReminderSupport rs) throws Exception
+	{
+		String formid=rs.getFormid();
+
+		String toemails[]=rs.getToemails();
+
+
+		System.out.println(formid);
+
+		for(String i : toemails)
+		{
+			
+			MailData m=md.getByIdandMail(formid,i);
+
+			String today = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+			
+			String name=m.getName();
+			int count=m.getRemindercount();
+
+
+
+			int maxCount=10;
+
+			List<SurveyFormConfig> li=cs.getAllSurveyFormConfig();
+			for(SurveyFormConfig j:li)
+			{
+				maxCount=j.getMaxReminderCount();
+			}
+
+			System.out.println(sendHTMLEmailWithAttachment(i,formid,name,count,maxCount,today));
+			m.setLast_sent_date(today);
+			m.setRemindercount(count+1);
+			ms.saveMailData(m);
+
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//	@GetMapping("/sendremindermail")
+	//	@ResponseBody
+	//	public void sendreminder() throws Exception
+	//	{
+	//		List<MailData> l=md.getDatafromMD();
+	//	    for(MailData i:l)
+	//	    {
+	//	    	String today = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+	//	    	String lsdate=i.getLast_sent_date();
+	//	    	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	//	    	Calendar c = Calendar.getInstance();
+	//	    	try{
+	//	    	   
+	//	    	   c.setTime(sdf.parse(lsdate));
+	//	    	}catch(ParseException e){
+	//	    		e.printStackTrace();
+	//	    	 }
+	//	    	   
+	//	    	int remindDays = 10;
+	//	    	int maxCount=3;
+	//	    	
+	//	    	
+	//		    List<SurveyFormConfig> li=cs.getAllSurveyFormConfig();
+	//		    for(SurveyFormConfig j:li)
+	//		    {
+	//		    	remindDays=j.getRemindAfterNumberOfDays();
+	//		    	maxCount=j.getMaxReminderCount();
+	//		    }
+	//	    	c.add(Calendar.DAY_OF_MONTH, remindDays);  
+	//	    	String addDate = sdf.format(c.getTime());
+	//	    	
+	//	    	int count=i.getRemindercount();
+	//	    	
+	//	    	
+	//	    	
+	//	    	if(count<maxCount)
+	//	    	{
+	//	    	if(addDate.equals(today))
+	//	    	{    		
+	//	    		String formid=i.getFormid();
+	//	    		String email=i.getEmail();
+	//	    		String name=i.getName();
+	//	    		
+	//	    		User u=ud.getByEmail(email);
+	//	    		String uid=u.getId();
+	//	    		
+	//	    		Optional<Responses> r=rd.findByFormIdandUserId(formid, uid);
+	////	    		System.out.println(r);
+	//	    		if(r.isEmpty())
+	//	    		{
+	//	    			System.out.println(sendHTMLEmailWithAttachment(email,formid,name,count,maxCount,today));
+	//	    			i.setLast_sent_date(today);
+	//	    			i.setRemindercount(count+1);
+	//	    			md.saveMailData(i);
+	//	    		}
+	//	    		
+	//	    		
+	//	    	}
+	//	    	}
+	//	    	else
+	//	    	{
+	//	    		i.setShowform(false);
+	//	    		md.saveMailData(i);
+	//	    	}
+	//	    	
+	//	    	
+	//	    	
+	//	    }
+	//	}
+	//	
+	//	
+	//	
+	//	
+	//	
 	public String sendHTMLEmailWithAttachment(String to,String formid,String name,int count,int maxCount,String today) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, freemarker.core.ParseException, IOException, TemplateException
 	{
-		
-		
-		
-		
+
+
+
+
 		String from = "accolite.survey@gmail.com";
-//		String tow = "nandini.sharma@accolitedigital.com";
-		
+		//		String tow = "nandini.sharma@accolitedigital.com";
+
 		String URL="http://localhost:3000/forms/"+formid;
-		
+
 		Map<String, Object> m = new HashMap<>();
 		m.put("Name", name);
 		m.put("URL", URL);
@@ -182,57 +347,65 @@ public class ReminderSenderController {
 		Template t = null;
 		if(count!=(maxCount-1))
 		{
-		 t = config.getTemplate("reminder.html");
+			t = config.getTemplate("reminder.html");
 		}
 		else
 		{
 			t = config.getTemplate("final_reminder.html");
 		}
-			
-		String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, m);
-		
-		
-		
 
-		
+		String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, m);
+
+
+
+
+
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true);
-		
+
 		if(count!=(maxCount-1))
 		{
-			helper.setSubject("Reminder Alert!");
+			helper.setSubject("Gentle Reminder");
 		}
 		else
 		{
-			helper.setSubject("Final Reminder Alert!");
+			helper.setSubject("Final Reminder");
 		}
 
-		
+
 		helper.setFrom(from);
 		helper.setTo(to);
 		helper.setText(html,true);
-		
-//		FileSystemResource file = new FileSystemResource(new File("g:\\MyEbooks\\Freelance for Programmers\\SuccessFreelance-Preview.pdf"));
-//		helper.addAttachment("FreelanceSuccess.pdf", file);
+
+		//		FileSystemResource file = new FileSystemResource(new File("g:\\MyEbooks\\Freelance for Programmers\\SuccessFreelance-Preview.pdf"));
+		//		helper.addAttachment("FreelanceSuccess.pdf", file);
 
 		mailSender.send(message);
-		
-		return "Reminder mail sent";
+
+		return "Reminder mail sent to "+to;
 	}
-	
-	
+
+
+
+
+
+
+
+
+
+
 	@GetMapping("/showform/{formid}")
 	@ResponseBody
 	boolean showForm(@PathVariable String formid,@RequestHeader("Authorization") String bearerToken )
 	{
 		System.out.println(formid);
-		
+
 		User u = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
 		String email=u.getEmail();
-		MailData x=m.getByIdandMail(formid, email);
+		MailData x=md.getByIdandMail(formid, email);
 		return x.isShowform();
 	}
-	
-	
+
+
 
 }
