@@ -59,8 +59,8 @@ public class ResponsesController {
 		return ResponseEntity.ok(responseService.check(user_id, form_id));
 	}
 	@PutMapping("/updateresponse")
-	public Responses updateResponse(@RequestBody Responses responses){
-		return responseService.updateResponse(responses);
+	public Responses updateResponse(@RequestHeader("Authorization") String bearerToken, @RequestBody Responses responses) throws MessagingException{
+		return responseService.updateResponse(responses, bearerToken);
 		//return null;
 	}
 }

@@ -24,5 +24,5 @@ public interface ResponsesService {
 	
 	public String sendEmailWithAttachment(String toEmail, String userName, String title, Sheet attachment) throws MessagingException;
 	
-	public Responses updateResponse(Responses responses);
+	public Responses updateResponse(Responses responses, String bearerToken) throws MessagingException;
 }

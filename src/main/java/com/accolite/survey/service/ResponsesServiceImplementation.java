@@ -238,7 +238,12 @@ public class ResponsesServiceImplementation implements ResponsesService {
 	}
 
 	@Override
-	public Responses updateResponse(Responses responses) {
+	public Responses updateResponse(Responses responses, String bearerToken) throws MessagingException {
+		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
+		System.out.println(user);
+		UserRoles[] roles = {UserRoles.EMPLOYEE};
+		authdao.restrictTo(roles, user);
+		
 		// TODO Auto-generated method stub
 		Query query = new Query();
 		Criteria criteria = new Criteria();
@@ -250,6 +255,13 @@ public class ResponsesServiceImplementation implements ResponsesService {
 		Responses oldResponses=returnedResponses.get(0);
 		oldResponses.setAnswers(responses.getAnswers());
 		responsedao.save(oldResponses);
+		
+		Form form = formService.getFormByID(responses.getFormId(), bearerToken);
+		if(responses.getSendCopy() == 1) {
+			Sheet copy = responseService.createResponseCopy(responses, form.getFormTitle());
+		    responseService.sendEmailWithAttachment(user.getEmail(), user.getName(), form.getFormTitle(), copy);
+		}
+		
 		return oldResponses;
 	}
 
