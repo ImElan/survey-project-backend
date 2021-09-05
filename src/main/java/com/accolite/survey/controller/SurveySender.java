@@ -431,7 +431,7 @@ public class SurveySender {
 					if (newto.contains(emailId)) {
 
 						String from = "accolite.survey@gmail.com";
-
+						System.out.println("\n\n\n\n"+formid+"\n\n\n");
 						String URL = "http://localhost:3000/forms/" + formid + "";
 
 						MimeMessage message = mailSender.createMimeMessage();
@@ -594,7 +594,7 @@ public class SurveySender {
 				if (newto.contains(emailId)) {
 
 					String from = "accolite.survey@gmail.com";
-
+					System.out.println("\n\n\n\n"+formid+"\n\n\n");
 					String URL = "http://localhost:3000/forms/" + formid + "";
 
 					MimeMessage message = mailSender.createMimeMessage();
