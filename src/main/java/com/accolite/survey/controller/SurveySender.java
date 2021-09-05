@@ -115,11 +115,11 @@ public class SurveySender {
 
 	@PostMapping("/accolite/filter_employees")
 	@ResponseBody
-	public String filterEmployee(@RequestBody MailData maildata) throws Exception {
+	public String filterEmployee(@RequestBody MailData maildata,@RequestHeader("Authorization") String bearerToken) throws Exception {
 
-//		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);  ,@RequestHeader("Authorization") String bearerToken
-//		UserRoles[] roles = {UserRoles.HR};
-//		authdao.restrictTo(roles, user);
+		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);  
+		UserRoles[] roles = {UserRoles.HR};
+		authdao.restrictTo(roles, user);
 
 		String formid = maildata.getFormid();
 
@@ -304,12 +304,12 @@ public class SurveySender {
 
 	@PostMapping("/accolite/send_email_with_no_of_days")
 	@ResponseBody
-	public String sendMail(@RequestBody MailData maildata) throws Exception {
+	public String sendMail(@RequestBody MailData maildata,@RequestHeader("Authorization") String bearerToken) throws Exception {
 
-//
-//		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
-//		UserRoles[] roles = {UserRoles.HR};
-//		authdao.restrictTo(roles, user);
+
+		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
+		UserRoles[] roles = {UserRoles.HR};
+		authdao.restrictTo(roles, user);
 
 		if (mainno_of_days_after_mail == 0) {
 			return "Illegal API Call";
