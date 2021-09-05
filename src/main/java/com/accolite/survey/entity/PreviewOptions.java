@@ -17,5 +17,9 @@ public List<PreviewOptionArray> getOptionsArray() {
 public void setOptionsArray(List<PreviewOptionArray> optionsArray) {
 	this.optionsArray = optionsArray;
 }
+@Override
+public String toString() {
+	return "PreviewOptions [isOptionsValid=" + isOptionsValid + ", optionsArray=" + optionsArray + "]";
+}
 
 }

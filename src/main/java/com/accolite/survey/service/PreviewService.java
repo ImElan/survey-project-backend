@@ -33,7 +33,7 @@ public class PreviewService {
 //		UserRoles[] roles = {UserRoles.HR};
 //		authdao.restrictTo(roles, user);
 		
-		
+		System.out.println("\n\n\n"+preview+"\n\n\n");
 		previewdao.save(preview);
 		System.out.println(preview.getId().toString());
 		return preview.getId().toString();

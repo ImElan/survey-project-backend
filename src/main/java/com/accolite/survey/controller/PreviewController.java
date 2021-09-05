@@ -22,7 +22,8 @@ public class PreviewController {
 	PreviewService previewService ;
 	@PostMapping("/post/preview")
 	public String postpreview(@RequestBody Preview preview,@RequestHeader("Authorization") String bearerToken){
-		
+		System.out.println("\n\n\n\nhere");
+		System.out.println("\n\n\n"+preview+"\n\n\n\n");
 		return previewService.addResponse(preview,bearerToken);
 	}
 	

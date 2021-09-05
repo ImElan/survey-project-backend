@@ -10,9 +10,8 @@ public class PreviewQuestions {
  private boolean isHalfStarAllowed;
  private boolean isValid;
  private String numStars;
- private String image;
  private String imageData;
- private PreviewOptions options;
+ private List<String> options;
 public String getQuestionId() {
 	return questionId;
 }
@@ -55,23 +54,25 @@ public String getNumStars() {
 public void setNumStars(String numStars) {
 	this.numStars = numStars;
 }
-public String getImage() {
-	return image;
-}
-public void setImage(String image) {
-	this.image = image;
-}
+
 public String getImageData() {
 	return imageData;
 }
 public void setImageData(String imageData) {
 	this.imageData = imageData;
 }
-public PreviewOptions getOptions() {
+
+public List<String> getOptions() {
 	return options;
 }
-public void setOptions(PreviewOptions options) {
+public void setOptions(List<String> options) {
 	this.options = options;
+}
+@Override
+public String toString() {
+	return "PreviewQuestions [questionId=" + questionId + ", question=" + question + ", questionType=" + questionType
+			+ ", required=" + required + ", isHalfStarAllowed=" + isHalfStarAllowed + ", isValid=" + isValid
+			+ ", numStars=" + numStars + ", imageData=" + imageData + ", options=" + options + "]";
 }
 
  

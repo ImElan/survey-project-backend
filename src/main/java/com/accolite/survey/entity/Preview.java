@@ -61,6 +61,12 @@ public class Preview {
 	public void setId(String id) {
 		this.id = id;
 	}
+	@Override
+	public String toString() {
+		return "Preview [id=" + id + ", title=" + title + ", description=" + description + ", questions=" + questions
+				+ ", totalQuestions=" + totalQuestions + ", questionsPerPage=" + questionsPerPage + "]";
+	}
+	
 	
 	
 }

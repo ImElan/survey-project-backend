@@ -15,5 +15,9 @@ public String getOptionId() {
 public void setOptionId(String optionId) {
 	this.optionId = optionId;
 }
+@Override
+public String toString() {
+	return "PreviewOptionArray [option=" + option + ", optionId=" + optionId + "]";
+}
 
 }
