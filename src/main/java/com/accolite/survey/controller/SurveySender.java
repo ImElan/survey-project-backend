@@ -78,12 +78,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class SurveySender {
 	@Autowired
 	AuthDAOImplementation authdao;
-
 
 	@Autowired
 	private JavaMailSender mailSender;
@@ -110,26 +110,18 @@ public class SurveySender {
 	ConfigFormDAO cf;
 
 	int mainno_of_days_after_mail;
-	String mainformid;
 	String mainfrom_date;
 	String mainto_date;
-	String mainmailToBeSendOn;
-	Date mainmailToBeSendOn2;
-	int mainremindAfterNumberOfDays;
-	int mainmaxReminderCount;
-
-
 
 	@PostMapping("/accolite/filter_employees")
 	@ResponseBody
 	public String filterEmployee(@RequestBody MailData maildata,@RequestHeader("Authorization") String bearerToken) throws Exception {
 
-
-
 		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);  
 		UserRoles[] roles = {UserRoles.HR};
 		authdao.restrictTo(roles, user);
 
+		String formid = maildata.getFormid();
 
 		// Default value for 'the no of days' after mail
 
@@ -138,21 +130,18 @@ public class SurveySender {
 		// Initialising the received data from PostMapping
 
 		no_of_days_after_mail = maildata.getNo_of_days_after_mail();
-		String formid = maildata.getFormid();
 		String from_date = maildata.getFrom_date();
 		String to_date = maildata.getTo_date();
-		//		int maxReminderCount = maildata.getMaxReminderCount();
-		//		int remindAfterNumberOfDays = maildata.getRemindAfterNumberOfDays();
+		// int maxReminderCount = maildata.getMaxReminderCount();
+		// int remindAfterNumberOfDays = maildata.getRemindAfterNumberOfDays();
 
 		// Initialising the received data from PostMapping to the global variable
 
-		mainformid = formid;
 		mainno_of_days_after_mail = no_of_days_after_mail;
 		mainfrom_date = from_date;
 		mainto_date = to_date;
-		//		mainmaxReminderCount = maxReminderCount;
-		//		mainremindAfterNumberOfDays = remindAfterNumberOfDays;
-
+		// mainmaxReminderCount = maxReminderCount;
+		// mainremindAfterNumberOfDays = remindAfterNumberOfDays;
 
 		// Getting data from Accolite API with Authorization token
 
@@ -183,8 +172,10 @@ public class SurveySender {
 
 		JSONArray array = new JSONArray(x);
 
-		// New JSON Array initialisation for storing the Employee details who completed -
-		// Z days between X and Y date ranges that has to be sent to Bhargavi who shows -
+		// New JSON Array initialisation for storing the Employee details who completed
+		// -
+		// Z days between X and Y date ranges that has to be sent to Bhargavi who shows
+		// -
 		// the details in Frontend
 
 		JSONArray ja = new JSONArray();
@@ -200,7 +191,6 @@ public class SurveySender {
 			String empcode = obj.getString("empCode");
 			String bu = obj.getString("bu");
 			String acc = obj.getString("account");
-
 
 			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH);
 			Date varDate = null;
@@ -222,19 +212,16 @@ public class SurveySender {
 				Date d1 = sdf.parse(from_date);
 				Date d3 = sdf.parse(to_date);
 
-				Date date = Calendar.getInstance().getTime();  
-				DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");  
-				String today = dateFormat2.format(date);  
-				mainmailToBeSendOn=today;
-
-
+				Date date = Calendar.getInstance().getTime();
+				DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+				String today = dateFormat2.format(date);
 
 				if (d2.compareTo(d1) >= 0) {
 					if (d2.compareTo(d3) <= 0) {
 
 						// Reject the entity if emailid, doj, empname, empcode is empty
 
-						if (emailId != "" && doj != "" && empname != "" && empcode != "" && bu!="" && acc!="")
+						if (emailId != "" && doj != "" && empname != "" && empcode != "" && bu != "" && acc != "")
 
 						{
 
@@ -248,7 +235,6 @@ public class SurveySender {
 							jsonObject.put("Employee Code", empcode);
 							jsonObject.put("Employee BU", bu);
 							jsonObject.put("Employee Account", acc);
-
 
 							// Adding each JSON object to new JSON Array
 
@@ -316,7 +302,7 @@ public class SurveySender {
 
 	}
 
-	@PostMapping("/accolite/send_email")
+	@PostMapping("/accolite/send_email_with_no_of_days")
 	@ResponseBody
 	public String sendMail(@RequestBody MailData maildata,@RequestHeader("Authorization") String bearerToken) throws Exception {
 
@@ -325,12 +311,152 @@ public class SurveySender {
 		UserRoles[] roles = {UserRoles.HR};
 		authdao.restrictTo(roles, user);
 
+		if (mainno_of_days_after_mail == 0) {
+			return "Illegal API Call";
+		} else {
+			String formid = maildata.getFormid();
 
-		// To check an Illegal API Call
+			// Initialising the received to array from PostMapping to newto list
 
-		if (mainformid == null && mainfrom_date == null && mainto_date == null && mainmailToBeSendOn == null && mainmailToBeSendOn2 == null) {
-			return "Illegal API call !";
+			String to[] = maildata.getTomailid();
+
+			List<String> newto = Arrays.asList(to);
+
+			ArrayList<String> mailedemp = new ArrayList<>();
+
+			// Getting data from Accolite API with Authorization token
+
+			URL url = new URL("https://apps.accolite.com/apps/api/employees/getEmployeeDetails");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+			conn.setRequestProperty("Authorization", "Bearer"
+					+ " 8091108D9AE409BB2ECCA39BE1A945EBF8F827D000C73E41B59333F743FFBC63ED5086965A621EB78B458810DD7D1E77409A6A18431A29E58370935841266B5CF4AB892F");
+
+			conn.setRequestProperty("Content-Type", "application/json");
+			conn.setRequestMethod("GET");
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			String output;
+
+			StringBuffer response = new StringBuffer();
+			while ((output = in.readLine()) != null) {
+				response.append(output);
+			}
+
+			in.close();
+
+			// Original Accolite Employees details in JSON String
+
+			String x = response.toString();
+
+			// Original Accolite Employees details converted from JSON String to JSON Array
+
+			JSONArray array = new JSONArray(x);
+
+			for (int i = 0; i < array.length(); i++) {
+
+				JSONObject obj = array.getJSONObject(i);
+				String empname = obj.getString("empname");
+				String emailId = obj.getString("emailId");
+				String doj = obj.getString("doj");
+				String empcode = obj.getString("empCode");
+				String bu = obj.getString("bu");
+				String acc = obj.getString("account");
+
+				if (emailId != "" && doj != "" && empname != "" && empcode != "" && bu != "" && acc != "")
+
+				{
+
+					// If the Ïentity's mail id lies in the original employee details, fetch -
+					// the data to store into database for reuseage for Prasana for reminder mail
+
+					if (newto.contains(emailId)) {
+
+						String from = "accolite.survey@gmail.com";
+
+						String URL = "http://localhost:3000/forms/" + formid + "";
+
+						MimeMessage message = mailSender.createMimeMessage();
+						MimeMessageHelper helper = new MimeMessageHelper(message, true);
+						helper.setSubject("HR Connect Survey - Response Required !!");
+						helper.setFrom(from);
+						helper.setTo(emailId);
+
+						Map<String, Object> m = new HashMap<>();
+						m.put("Name", empname);
+						m.put("Days", mainno_of_days_after_mail);
+						m.put("URL", URL);
+
+						Template t = config.getTemplate("survey.html");
+						String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, m);
+
+						helper.setText(html, true);
+						mailSender.send(message);
+
+						Date date = Calendar.getInstance().getTime();
+						DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+						String today = dateFormat2.format(date);
+
+						// Save the details into database for Prasana
+
+						MailData w = new MailData();
+//					SurveyFormConfig s = new SurveyFormConfig();
+						mailedemp.add(empname);
+						// s.setDaysAfterWhichEmailShouldBeSent(mainno_of_days_after_mail);
+						// s.setMaxReminderCount(mainmaxReminderCount);
+						// s.setRemindAfterNumberOfDays(mainremindAfterNumberOfDays);
+						// s.setFormid(mainformid);
+						w.setEmail(emailId);
+						w.setName(empname);
+						// w.setLast_sent_date2(mainmailToBeSendOn2);
+						w.setAcc(acc);
+						w.setBu(bu);
+						w.setDoj(doj);
+						w.setEmpcode(empcode);
+						w.setFormid(formid);
+						w.setLast_sent_date(today);
+						w.setNo_of_days_after_mail(mainno_of_days_after_mail);
+						w.setUrl(URL);
+						w.setShowform(true);
+						w.setRemindercount(0);
+						md.saveMailData(w);
+						// cs.addSurveyFormConfig(s);
+
+						// Printing for test purposes
+
+						System.out.println("\n\nAccolite Survey link sent successfully to the employee " + empname
+								+ " and he/she have completed " + mainno_of_days_after_mail
+								+ " Day(s) in Accolite between " + mainfrom_date + " and " + mainto_date
+								+ " range \n\n");
+
+					}
+				}
+
+			}
+
+			String res = "SUCCESS !! Accolite Survey link sent successfully to the employee " + mailedemp + "";
+
+			// Final initialisation on the global variables to null, to check an Illegal API
+			// -
+			// Call
+
+			mainfrom_date = null;
+			mainto_date = null;
+			mainno_of_days_after_mail = 0;
+			return res;
+
 		}
+	}
+
+	@PostMapping("/accolite/send_email_without_no_of_days")
+	@ResponseBody
+	public String sendMail2(@RequestBody MailData maildata) throws Exception {
+
+//		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
+//		UserRoles[] roles = {UserRoles.HR};
+//		authdao.restrictTo(roles, user);
+
+		String formid = maildata.getFormid();
 
 		// Initialising the received to array from PostMapping to newto list
 
@@ -379,8 +505,7 @@ public class SurveySender {
 			String bu = obj.getString("bu");
 			String acc = obj.getString("account");
 
-
-			if (emailId != "" && doj != "" && empname != "" && empcode != "" && bu !="" && acc!="")
+			if (emailId != "" && doj != "" && empname != "" && empcode != "" && bu != "" && acc != "")
 
 			{
 
@@ -391,7 +516,7 @@ public class SurveySender {
 
 					String from = "accolite.survey@gmail.com";
 
-					String URL = "http://localhost:3000/forms/" + mainformid + "";
+					String URL = "http://localhost:3000/forms/" + formid + "";
 
 					MimeMessage message = mailSender.createMimeMessage();
 					MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -401,65 +526,58 @@ public class SurveySender {
 
 					Map<String, Object> m = new HashMap<>();
 					m.put("Name", empname);
-					m.put("Days", mainno_of_days_after_mail);
 					m.put("URL", URL);
 
-					Template t = config.getTemplate("survey.html");
+					Template t = config.getTemplate("survey2.html");
 					String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, m);
 
 					helper.setText(html, true);
 					mailSender.send(message);
 
+					Date date = Calendar.getInstance().getTime();
+					DateFormat dateFormat2 = new SimpleDateFormat("dd/MM/yyyy");
+					String today = dateFormat2.format(date);
+
 					// Save the details into database for Prasana
 
 					MailData w = new MailData();
-					SurveyFormConfig s = new SurveyFormConfig();
+//					SurveyFormConfig s = new SurveyFormConfig();
 					mailedemp.add(empname);
-					//					s.setDaysAfterWhichEmailShouldBeSent(mainno_of_days_after_mail);
-					//					s.setMaxReminderCount(mainmaxReminderCount);
-					//					s.setRemindAfterNumberOfDays(mainremindAfterNumberOfDays);
-					//					s.setFormid(mainformid);
+					// s.setDaysAfterWhichEmailShouldBeSent(mainno_of_days_after_mail);
+					// s.setMaxReminderCount(mainmaxReminderCount);
+					// s.setRemindAfterNumberOfDays(mainremindAfterNumberOfDays);
+					// s.setFormid(mainformid);
 					w.setEmail(emailId);
 					w.setName(empname);
-					//					w.setLast_sent_date2(mainmailToBeSendOn2);
+					// w.setLast_sent_date2(mainmailToBeSendOn2);
 					w.setAcc(acc);
 					w.setBu(bu);
 					w.setDoj(doj);
 					w.setEmpcode(empcode);
-					w.setFormid(mainformid);
-					w.setLast_sent_date(mainmailToBeSendOn);
-					w.setNo_of_days_after_mail(mainno_of_days_after_mail);
+					w.setFormid(formid);
+					w.setLast_sent_date(today);
 					w.setUrl(URL);
 					w.setShowform(true);
 					w.setRemindercount(0);
 					md.saveMailData(w);
-					//					cs.addSurveyFormConfig(s);
+					// cs.addSurveyFormConfig(s);
 
 					// Printing for test purposes
 
-					System.out.println("\n\nAccolite Survey link sent successfully to the employee "
-							+ empname + " and he/she have completed " + mainno_of_days_after_mail
-							+ " Day(s) in Accolite between " + mainfrom_date + " and " + mainto_date
-							+ " range \n\n");
+					System.out
+							.println("\n\nAccolite Survey link sent successfully to the employee " + empname + " \n\n");
 
 				}
 			}
 
 		}
 
-		String res ="SUCCESS !! Accolite Survey link sent successfully to the employee " + mailedemp+"";
+		String res = "SUCCESS !! Accolite Survey link sent successfully to the employee " + mailedemp + "";
 
-		// Final initialisation on the global variables to null, to check an Illegal API -
+		// Final initialisation on the global variables to null, to check an Illegal API
+		// -
 		// Call
 
-		mainformid = null;
-		mainfrom_date = null;
-		mainto_date = null;
-		mainmailToBeSendOn=null;
-		mainmailToBeSendOn2=null;
-		mainno_of_days_after_mail=0;
-		mainmaxReminderCount=0;
-		mainremindAfterNumberOfDays=0;
 		return res;
 
 	}
