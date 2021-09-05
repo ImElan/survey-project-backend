@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -33,6 +34,12 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.mail.internet.MimeMessage;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -112,7 +119,7 @@ public class SurveySender {
 	int mainno_of_days_after_mail;
 	String mainfrom_date;
 	String mainto_date;
-
+	
 	@PostMapping("/accolite/filter_employees")
 	@ResponseBody
 	public String filterEmployee(@RequestBody MailData maildata,@RequestHeader("Authorization") String bearerToken) throws Exception {
@@ -144,8 +151,34 @@ public class SurveySender {
 		// mainremindAfterNumberOfDays = remindAfterNumberOfDays;
 
 		// Getting data from Accolite API with Authorization token
+		
+		
+		TrustManager[] trustAllCerts = new TrustManager[]{
+			    new X509TrustManager() {
+			        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+			            return null;
+			        }
+			        public void checkClientTrusted(
+			            java.security.cert.X509Certificate[] certs, String authType) {
+			        }
+			        public void checkServerTrusted(
+			            java.security.cert.X509Certificate[] certs, String authType) {
+			        }
+			    }
+			};
+
+			// Install the all-trusting trust manager
+			try {
+			    SSLContext sc = SSLContext.getInstance("SSL");
+			    sc.init(null, trustAllCerts, new java.security.SecureRandom());
+			    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			} catch (Exception e) {
+			}
+		
 
 		URL url = new URL("https://apps.accolite.com/apps/api/employees/getEmployeeDetails");
+		
+		
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
 		conn.setRequestProperty("Authorization", "Bearer"
@@ -155,6 +188,7 @@ public class SurveySender {
 		conn.setRequestMethod("GET");
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+	
 		String output;
 
 		StringBuffer response = new StringBuffer();
@@ -325,6 +359,30 @@ public class SurveySender {
 			ArrayList<String> mailedemp = new ArrayList<>();
 
 			// Getting data from Accolite API with Authorization token
+			
+			
+			TrustManager[] trustAllCerts = new TrustManager[]{
+				    new X509TrustManager() {
+				        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+				            return null;
+				        }
+				        public void checkClientTrusted(
+				            java.security.cert.X509Certificate[] certs, String authType) {
+				        }
+				        public void checkServerTrusted(
+				            java.security.cert.X509Certificate[] certs, String authType) {
+				        }
+				    }
+				};
+
+				// Install the all-trusting trust manager
+				try {
+				    SSLContext sc = SSLContext.getInstance("SSL");
+				    sc.init(null, trustAllCerts, new java.security.SecureRandom());
+				    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+				} catch (Exception e) {
+				}
+			
 
 			URL url = new URL("https://apps.accolite.com/apps/api/employees/getEmployeeDetails");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -450,8 +508,7 @@ public class SurveySender {
 
 	@PostMapping("/accolite/send_email_without_no_of_days")
 	@ResponseBody
-	public String sendMail2(@RequestBody MailData maildata,@RequestHeader("Authorization") String bearerToken
-) throws Exception {
+	public String sendMail2(@RequestBody MailData maildata,@RequestHeader("Authorization") String bearerToken) throws Exception {
 
 		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
 		UserRoles[] roles = {UserRoles.HR};
@@ -468,16 +525,37 @@ public class SurveySender {
 		ArrayList<String> mailedemp = new ArrayList<>();
 
 		// Getting data from Accolite API with Authorization token
+		
+		TrustManager[] trustAllCerts = new TrustManager[]{
+			    new X509TrustManager() {
+			        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+			            return null;
+			        }
+			        public void checkClientTrusted(
+			            java.security.cert.X509Certificate[] certs, String authType) {
+			        }
+			        public void checkServerTrusted(
+			            java.security.cert.X509Certificate[] certs, String authType) {
+			        }
+			    }
+			};
+
+			// Install the all-trusting trust manager
+			try {
+			    SSLContext sc = SSLContext.getInstance("SSL");
+			    sc.init(null, trustAllCerts, new java.security.SecureRandom());
+			    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			} catch (Exception e) {
+			}
+		
 
 		URL url = new URL("https://apps.accolite.com/apps/api/employees/getEmployeeDetails");
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
 		conn.setRequestProperty("Authorization", "Bearer"
 				+ " 8091108D9AE409BB2ECCA39BE1A945EBF8F827D000C73E41B59333F743FFBC63ED5086965A621EB78B458810DD7D1E77409A6A18431A29E58370935841266B5CF4AB892F");
-
 		conn.setRequestProperty("Content-Type", "application/json");
 		conn.setRequestMethod("GET");
-
 		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 		String output;
 
