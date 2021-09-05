@@ -450,11 +450,12 @@ public class SurveySender {
 
 	@PostMapping("/accolite/send_email_without_no_of_days")
 	@ResponseBody
-	public String sendMail2(@RequestBody MailData maildata) throws Exception {
+	public String sendMail2(@RequestBody MailData maildata,@RequestHeader("Authorization") String bearerToken
+) throws Exception {
 
-//		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
-//		UserRoles[] roles = {UserRoles.HR};
-//		authdao.restrictTo(roles, user);
+		User user = authdao.isAuthenticated(bearerToken,TokenType.ACCESS);
+		UserRoles[] roles = {UserRoles.HR};
+		authdao.restrictTo(roles, user);
 
 		String formid = maildata.getFormid();
 
