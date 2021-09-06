@@ -39,7 +39,7 @@ public void setRequired(boolean required) {
 public boolean isHalfStarAllowed() {
 	return isHalfStarAllowed;
 }
-public void setHalfStarAllowed(boolean isHalfStarAllowed) {
+public void setIsHalfStarAllowed(boolean isHalfStarAllowed) {
 	this.isHalfStarAllowed = isHalfStarAllowed;
 }
 public boolean isValid() {
