@@ -1,5 +1,7 @@
 package com.accolite.survey.service.Auth;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -56,7 +58,7 @@ public class AuthServiceImplementation implements AuthService {
 	}
 
 	@Override
-	public User getUserByEmail(String email) {
+	public List<User> getUserByEmail(String email) {
 		return authDao.getUserByEmail(email);
 	}
 	

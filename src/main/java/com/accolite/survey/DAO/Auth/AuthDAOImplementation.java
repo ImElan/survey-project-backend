@@ -484,7 +484,7 @@ public class AuthDAOImplementation implements AuthDAO {
 	 *  Method to get user by email.
 	 */
 	@Override
-	public User getUserByEmail(String email) {
+	public List<User> getUserByEmail(String email) {
 		if(email == null) {
 			throw new AuthApiRequestException("Please provide an email id.");
 		}
@@ -500,8 +500,8 @@ public class AuthDAOImplementation implements AuthDAO {
 			throw new AuthApiRequestException("No user exists with the given email id");
 		}
 		
-		User user = users.get(0);
-		return user;
+//		User user = users.get(0);
+		return users;
 	}
 	
 	/*

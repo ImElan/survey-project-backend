@@ -1,5 +1,7 @@
 package com.accolite.survey.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -66,7 +68,7 @@ public class AuthController {
 	}
 	
 	@GetMapping("/user/{email}")
-	public User getUserByEmail(@PathVariable("email") String email) {
+	public List<User> getUserByEmail(@PathVariable("email") String email) {
 		return authService.getUserByEmail(email);
 	}
 	

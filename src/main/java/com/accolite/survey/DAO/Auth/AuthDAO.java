@@ -1,5 +1,7 @@
 package com.accolite.survey.DAO.Auth;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 
 import com.accolite.survey.Model.AuthResponse;
@@ -15,5 +17,5 @@ public interface AuthDAO {
 	String authRouteWithRolesCheck(String bearerToken);
 	ResponseEntity<Object> grantAccess(User user, String bearerToken);
 	ResponseEntity<Object> grantAccess(String[] emails, UserRoles role, String bearerToken); 
-	User getUserByEmail(String email);
+	List<User> getUserByEmail(String email);
 }
