@@ -491,7 +491,8 @@ public class AuthDAOImplementation implements AuthDAO {
 		
 		// get the user using given email id.
 		Query query = new Query();
-		query.addCriteria(Criteria.where("email").is(email));
+//		query.addCriteria(Criteria.where("email").is(email));
+		query.addCriteria(Criteria.where("email").regex(email+".*", "i"));
 		List<User> users = mongoTemplate.find(query, User.class);
 		
 		// check if user exists for the given user id.

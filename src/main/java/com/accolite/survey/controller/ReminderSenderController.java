@@ -365,11 +365,11 @@ public class ReminderSenderController {
 
 		if(count!=(maxCount-1))
 		{
-			helper.setSubject("Gentle Reminder");
+			helper.setSubject("Gentle Reminder - HR Connect Survey");
 		}
 		else
 		{
-			helper.setSubject("Final Reminder");
+			helper.setSubject("Final Reminder - HR Connect Survey");
 		}
 
 
